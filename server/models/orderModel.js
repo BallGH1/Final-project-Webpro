@@ -1,7 +1,9 @@
 // Model: ออร์เดอร์ — ราคาและยอดรวมคำนวณที่ Server จากข้อมูลเมนูจริง ไม่เชื่อค่าที่ Client ส่งมา
 import { getAll, nextId, update } from './db.js'
 import { HttpError } from '../utils/HttpError.js'
+import { requireOrderable } from './sessionModel.js'
 import {
+  MAX_REASON_LENGTH,
   ORDER_STATUS,
   STATUS_LABEL,
   canChangeStatus,
@@ -28,10 +30,10 @@ export async function findById(id) {
   return order
 }
 
-export function create({ tableId, items, note } = {}) {
+/** สร้างออร์เดอร์ผ่าน token ของบิล (ไม่รับเลขโต๊ะตรง ๆ เพื่อกันการสั่งเข้าโต๊ะคนอื่น) */
+export function create({ token, items, note } = {}) {
   return update((db) => {
-    const table = db.tables.find((t) => t.id === String(tableId ?? '').toUpperCase())
-    if (!table) throw new HttpError(400, 'ไม่พบหมายเลขโต๊ะ')
+    const session = requireOrderable(db.sessions, token)
     if (!Array.isArray(items) || items.length === 0) {
       throw new HttpError(400, 'ไม่มีรายการอาหารในออร์เดอร์')
     }
@@ -52,7 +54,8 @@ export function create({ tableId, items, note } = {}) {
     const order = {
       id,
       orderNo: `ORD-${String(id).padStart(4, '0')}`,
-      tableId: table.id,
+      tableId: session.tableId,
+      sessionId: session.id,
       items: lines,
       total: lines.reduce((sum, l) => sum + l.price * l.qty, 0),
       note: String(note ?? '').trim().slice(0, 200),
@@ -65,7 +68,8 @@ export function create({ tableId, items, note } = {}) {
   })
 }
 
-export function updateStatus(id, status) {
+/** เปลี่ยนสถานะ — ถ้ายกเลิกต้องมีเหตุผล (ลูกค้าจะเห็นเหตุผลนี้ใน popup แจ้งเตือน) */
+export function updateStatus(id, status, reason) {
   return update((db) => {
     const order = db.orders.find((o) => o.id === Number(id))
     if (!order) throw new HttpError(404, 'ไม่พบออร์เดอร์นี้')
@@ -75,6 +79,14 @@ export function updateStatus(id, status) {
         409,
         `เปลี่ยนสถานะจาก "${STATUS_LABEL[order.status]}" เป็น "${STATUS_LABEL[status]}" ไม่ได้`,
       )
+    }
+    if (status === ORDER_STATUS.CANCELLED) {
+      const text = String(reason ?? '').trim()
+      if (text.length === 0) throw new HttpError(400, 'กรุณาระบุเหตุผลที่ยกเลิก')
+      if (text.length > MAX_REASON_LENGTH) {
+        throw new HttpError(400, `เหตุผลยาวได้ไม่เกิน ${MAX_REASON_LENGTH} ตัวอักษร`)
+      }
+      order.cancelReason = text
     }
     order.status = status
     order.updatedAt = new Date().toISOString()

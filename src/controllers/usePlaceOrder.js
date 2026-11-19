@@ -1,11 +1,11 @@
-// Controller: ยืนยันการสั่งอาหาร — ส่งตะกร้าไประบบกลาง แล้วล้างตะกร้า
+// Controller: ยืนยันการสั่งอาหาร — ส่งตะกร้าไประบบกลางผ่าน token ของบิล แล้วล้างตะกร้า
 import { useState } from 'react'
 import { useCart } from './cart/useCart'
-import { createOrder } from '../models/orderModel'
+import { createSessionOrder } from '../models/sessionModel'
 import { toOrderItems } from '../models/cartModel'
 
 export function usePlaceOrder() {
-  const { tableId, items, clearCart } = useCart()
+  const { token, items, clearCart } = useCart()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -14,7 +14,7 @@ export function usePlaceOrder() {
     setSubmitting(true)
     setError('')
     try {
-      const order = await createOrder({ tableId, items: toOrderItems(items), note })
+      const order = await createSessionOrder(token, { items: toOrderItems(items), note })
       clearCart()
       return order
     } catch (err) {

@@ -1,4 +1,4 @@
-import { Armchair, Clock, StickyNote } from 'lucide-react'
+import { Armchair, Ban, Clock, StickyNote } from 'lucide-react'
 import StatusBadge from './StatusBadge'
 import FoodImage from '../common/FoodImage'
 import { formatMoney, formatTime } from '../../../models/formatters'
@@ -73,6 +73,13 @@ export default function OrderCard({ order, showTable = false, showProgress = fal
             </li>
           ))}
         </ul>
+
+        {order.status === 'cancelled' && order.cancelReason && (
+          <p className="flex items-start gap-2 rounded-field bg-error/10 px-3 py-2 text-sm text-error">
+            <Ban size={15} className="mt-0.5 shrink-0" aria-hidden="true" />
+            ยกเลิกเพราะ: {order.cancelReason}
+          </p>
+        )}
 
         {order.note && (
           <p className="flex items-start gap-2 rounded-field bg-secondary/15 px-3 py-2 text-sm">

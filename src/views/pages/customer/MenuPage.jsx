@@ -1,9 +1,10 @@
 // หน้าเมนู (ลูกค้า): ดูเมนูตามหมวด, ค้นหา, เพิ่มลงตะกร้า
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useOutletContext } from 'react-router-dom'
 import { CircleCheck, SearchX } from 'lucide-react'
 import { useMenu, useMenuFilter } from '../../../controllers/useMenu'
 import { useCart } from '../../../controllers/cart/useCart'
+import { canOrder } from '../../../models/sessionModel'
 import SearchBar from '../../components/menu/SearchBar'
 import CategoryTabs from '../../components/menu/CategoryTabs'
 import MenuCard from '../../components/menu/MenuCard'
@@ -12,7 +13,9 @@ import { EmptyState, ErrorState, LoadingState } from '../../components/common/St
 export default function MenuPage() {
   const { menu, categories, loading, error, reload } = useMenu()
   const { query, setQuery, categoryId, setCategoryId, filtered } = useMenuFilter(menu)
-  const { tableId, items, addItem } = useCart()
+  const { basePath, items, addItem } = useCart()
+  const { session } = useOutletContext()
+  const orderable = canOrder(session.status)
   // toast แจ้งว่าเพิ่มลงตะกร้าแล้ว (หายเองหลัง 2 วินาที)
   const [toast, setToast] = useState(null)
 
@@ -46,7 +49,13 @@ export default function MenuPage() {
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
           {filtered.map((item) => (
-            <MenuCard key={item.id} item={item} inCartQty={qtyInCart(item.id)} onAdd={handleAdd} />
+            <MenuCard
+              key={item.id}
+              item={item}
+              inCartQty={qtyInCart(item.id)}
+              onAdd={handleAdd}
+              orderable={orderable}
+            />
           ))}
         </div>
       )}
@@ -56,7 +65,7 @@ export default function MenuPage() {
           <div key={toast.at} className="alert alert-success py-2.5 shadow-lg">
             <CircleCheck size={18} aria-hidden="true" />
             <span>เพิ่ม {toast.name} แล้ว</span>
-            <Link to={`/table/${tableId}/cart`} className="btn btn-xs btn-ghost underline">
+            <Link to={`${basePath}/cart`} className="btn btn-xs btn-ghost underline">
               ดูตะกร้า
             </Link>
           </div>

@@ -1,36 +1,44 @@
-// Controller: ข้อมูลโต๊ะ
-import { useEffect, useState } from 'react'
-import { getTable, getTables } from '../models/tableModel'
-
-/** ตรวจว่าโต๊ะจาก URL (/table/:tableId) มีอยู่จริง */
-export function useTable(tableId) {
-  const [state, setState] = useState({ table: null, loading: true, error: '' })
-
-  useEffect(() => {
-    let active = true
-    getTable(tableId)
-      .then((table) => active && setState({ table, loading: false, error: '' }))
-      .catch((err) => active && setState({ table: null, loading: false, error: err.message }))
-    return () => {
-      active = false
-    }
-  }, [tableId])
-
-  return state
-}
+// Controller: สถานะโต๊ะทั้งร้าน (หน้าพนักงาน) — ดึงใหม่ทุก POLL_INTERVAL จึงเห็นโต๊ะที่ขอเช็กบิลทันที
+import { useCallback, useEffect, useState } from 'react'
+import { getTables, openTable as openTableApi } from '../models/tableModel'
+import { POLL_INTERVAL } from '../models/orderModel'
 
 export function useTables() {
-  const [state, setState] = useState({ tables: [], loading: true, error: '' })
+  const [tables, setTables] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
     let active = true
-    getTables()
-      .then((tables) => active && setState({ tables, loading: false, error: '' }))
-      .catch((err) => active && setState({ tables: [], loading: false, error: err.message }))
+
+    function load() {
+      getTables()
+        .then((data) => {
+          if (!active) return
+          setTables(data)
+          setError('')
+        })
+        .catch((err) => active && setError(err.message))
+        .finally(() => active && setLoading(false))
+    }
+
+    load()
+    const timer = setInterval(load, POLL_INTERVAL)
     return () => {
       active = false
+      clearInterval(timer)
     }
-  }, [])
+  }, [refreshKey])
 
-  return state
+  const refresh = useCallback(() => setRefreshKey((key) => key + 1), [])
+
+  /** เปิดโต๊ะ → ได้บิลใหม่พร้อม token (error จาก API โยนต่อให้ View แสดง) */
+  async function openTable(tableId) {
+    const session = await openTableApi(tableId)
+    setTables((list) => list.map((t) => (t.id === tableId ? { ...t, session } : t)))
+    return session
+  }
+
+  return { tables, loading, error, refresh, openTable }
 }

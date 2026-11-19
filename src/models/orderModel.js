@@ -6,6 +6,8 @@ export {
   STATUS_LABEL,
   STATUS_ACTION_LABEL,
   NEXT_STATUS,
+  CANCEL_REASONS,
+  MAX_REASON_LENGTH,
 } from '../../shared/orderStatus.js'
 
 // ดึงออร์เดอร์ใหม่ทุก ๆ กี่มิลลิวินาที (จำลอง Real-time ด้วย polling)
@@ -16,8 +18,8 @@ export const getOrders = ({ tableId, status } = {}) =>
 
 export const getOrder = (id) => request(`/orders/${id}`)
 
-export const createOrder = ({ tableId, items, note }) =>
-  request('/orders', { method: 'POST', body: { tableId, items, note } })
+// การสร้างออร์เดอร์ของลูกค้าอยู่ใน sessionModel (สั่งผ่าน token ของบิลเท่านั้น)
 
-export const updateOrderStatus = (id, status) =>
-  request(`/orders/${id}/status`, { method: 'PATCH', body: { status } })
+/** `reason` จำเป็นเมื่อยกเลิก (status = 'cancelled') */
+export const updateOrderStatus = (id, status, reason) =>
+  request(`/orders/${id}/status`, { method: 'PATCH', body: { status, reason } })

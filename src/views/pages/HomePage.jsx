@@ -1,9 +1,6 @@
-// หน้าแรก: ทางเข้าสำหรับเดโม — เลือกโต๊ะ (แทนการสแกน QR) หรือเข้าหน้าพนักงาน
-import { Link } from 'react-router-dom'
-import { ArrowRight, ChefHat, Clock, QrCode, Soup, Users, UtensilsCrossed } from 'lucide-react'
-import { useTables } from '../../controllers/useTables'
+// หน้าแรก: อธิบายวิธีเข้าใช้ (ลูกค้าเข้าผ่าน QR ของบิลเท่านั้น) + ทางเข้าหน้าพนักงาน
+import { ArrowRight, ChefHat, Clock, QrCode, ScanLine, Soup, UtensilsCrossed } from 'lucide-react'
 import Button from '../components/common/Button'
-import { ErrorState, LoadingState } from '../components/common/StateMessages'
 
 const STEPS = [
   { Icon: QrCode, text: 'สแกน QR ที่โต๊ะ' },
@@ -11,9 +8,14 @@ const STEPS = [
   { Icon: Clock, text: 'ติดตามสถานะออร์เดอร์' },
 ]
 
-export default function HomePage() {
-  const { tables, loading, error } = useTables()
+// ลำดับการเดโมบนคอมเครื่องเดียว
+const DEMO_STEPS = [
+  'พนักงานเข้า "โต๊ะ & บิล" แล้วกดเปิดโต๊ะ',
+  'สแกน QR ที่ขึ้นมา (หรือกด "หน้าลูกค้า")',
+  'สั่งอาหาร → เช็กบิล → พนักงานปิดโต๊ะ',
+]
 
+export default function HomePage() {
   return (
     <div className="min-h-screen pb-10">
       {/* Hero banner (hero ของ DaisyUI) */}
@@ -40,29 +42,29 @@ export default function HomePage() {
       </section>
 
       <div className="mx-auto -mt-6 max-w-5xl space-y-6 px-4">
+        {/* ลูกค้าเข้าได้ทาง QR ของบิลเท่านั้น จึงไม่มีปุ่มเลือกโต๊ะเองที่หน้านี้ */}
         <section className="card bg-base-100 shadow-sm">
           <div className="card-body gap-4 p-5 sm:p-6">
-            <div>
-              <h2 className="card-title text-xl">เลือกโต๊ะของคุณ</h2>
-              <p className="text-sm text-base-content/60">ใช้งานจริงลูกค้าจะสแกน QR Code ที่โต๊ะเพื่อเข้าหน้านี้</p>
+            <div className="flex items-start gap-3">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <ScanLine size={22} aria-hidden="true" />
+              </span>
+              <div>
+                <h2 className="card-title text-xl">ลูกค้า: สแกน QR Code บนสลิป</h2>
+                <p className="text-sm text-base-content/60">
+                  พนักงานจะให้สลิป QR เมื่อเปิดโต๊ะ สแกนแล้วสั่งอาหารเข้าบิลของโต๊ะคุณได้ทันที
+                  QR เปลี่ยนใหม่ทุกครั้งที่เปิดโต๊ะ และใช้ไม่ได้หลังชำระเงิน
+                </p>
+              </div>
             </div>
-            {loading && <LoadingState />}
-            {error && <ErrorState message={error} onRetry={() => window.location.reload()} />}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
-              {tables.map((table) => (
-                <Link
-                  key={table.id}
-                  to={`/table/${table.id}`}
-                  className="group flex flex-col items-center gap-1 rounded-box border border-base-300 bg-base-100 px-2 py-4 transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md focus-visible:outline-2 focus-visible:outline-primary"
-                >
-                  <span className="font-display text-2xl font-semibold group-hover:text-primary">{table.id}</span>
-                  <span className="flex items-center gap-1 text-xs text-base-content/60">
-                    <Users size={12} aria-hidden="true" />
-                    {table.seats} ที่นั่ง
-                  </span>
-                </Link>
+            <ol className="grid gap-2 text-sm sm:grid-cols-3">
+              {DEMO_STEPS.map((text, index) => (
+                <li key={text} className="flex items-start gap-2 rounded-box bg-base-200 px-3 py-2.5">
+                  <span className="badge badge-primary badge-sm mt-0.5 shrink-0">{index + 1}</span>
+                  {text}
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
         </section>
 

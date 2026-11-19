@@ -1,8 +1,10 @@
 // Model: โต๊ะ
 import { request } from './apiClient'
+import { customerPath } from './sessionModel'
 
+/** รายการโต๊ะ พร้อมบิลที่เปิดอยู่ (table.session เป็น null ถ้าโต๊ะว่าง) */
 export const getTables = () => request('/tables')
-export const getTable = (id) => request(`/tables/${encodeURIComponent(id)}`)
+export const openTable = (id) => request(`/tables/${encodeURIComponent(id)}/open`, { method: 'POST' })
 export const getServerInfo = () => request('/server-info')
 
 const LOCAL_HOSTS = ['localhost', '127.0.0.1', '[::1]']
@@ -19,8 +21,8 @@ export function defaultBaseUrl(addresses = []) {
   return origin
 }
 
-/** URL ที่ลูกค้าเปิดเมื่อสแกน QR Code ของโต๊ะ */
-export const tableUrl = (baseUrl, id) => `${baseUrl.trim().replace(/\/+$/, '')}/table/${id}`
+/** URL ที่ลูกค้าเปิดเมื่อสแกน QR Code ของบิล (เปลี่ยนทุกครั้งที่เปิดโต๊ะใหม่) */
+export const sessionUrl = (baseUrl, token) => `${baseUrl.trim().replace(/\/+$/, '')}${customerPath(token)}`
 
 /** ตรวจว่าเป็น URL แบบ http(s) ที่ใช้ได้ */
 export function isValidBaseUrl(value) {

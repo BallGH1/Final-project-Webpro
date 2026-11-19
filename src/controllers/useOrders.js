@@ -1,9 +1,14 @@
 // Controller: ดึงออร์เดอร์จากระบบกลางทุก POLL_INTERVAL (หน้าพนักงานเห็นออร์เดอร์ใหม่อัตโนมัติ)
 import { useCallback, useEffect, useState } from 'react'
 import { POLL_INTERVAL, getOrders, updateOrderStatus } from '../models/orderModel'
+import { getSessionOrders } from '../models/sessionModel'
 
-/** @param {{ tableId?: string }} options ไม่ใส่ tableId = ดึงทุกโต๊ะ (หน้าพนักงาน) */
-export function useOrders({ tableId } = {}) {
+/**
+ * @param {{ token?: string, enabled?: boolean }} options
+ * ใส่ token = ออร์เดอร์เฉพาะบิลนี้ (หน้าลูกค้า), ไม่ใส่ = ทุกโต๊ะ (หน้าพนักงาน)
+ * enabled = false หยุดดึงข้อมูล (เช่น บิลปิดแล้ว)
+ */
+export function useOrders({ token, enabled = true } = {}) {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -11,10 +16,12 @@ export function useOrders({ tableId } = {}) {
   const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
+    if (!enabled) return
     let active = true
 
     function load() {
-      getOrders({ tableId })
+      const fetchOrders = token ? getSessionOrders(token) : getOrders()
+      fetchOrders
         .then((data) => {
           if (!active) return
           setOrders(data)
@@ -31,12 +38,12 @@ export function useOrders({ tableId } = {}) {
       active = false
       clearInterval(timer)
     }
-  }, [tableId, refreshKey])
+  }, [token, enabled, refreshKey])
 
   const refresh = useCallback(() => setRefreshKey((key) => key + 1), [])
 
-  async function changeStatus(orderId, status) {
-    const updated = await updateOrderStatus(orderId, status)
+  async function changeStatus(orderId, status, reason) {
+    const updated = await updateOrderStatus(orderId, status, reason)
     setOrders((list) => list.map((order) => (order.id === orderId ? updated : order)))
     return updated
   }

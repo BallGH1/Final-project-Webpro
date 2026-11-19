@@ -2,7 +2,8 @@ import { Plus } from 'lucide-react'
 import FoodImage from '../common/FoodImage'
 import { formatMoney } from '../../../models/formatters'
 
-export default function MenuCard({ item, inCartQty = 0, onAdd }) {
+/** `orderable={false}` ซ่อนปุ่มเพิ่ม (เช่น ลูกค้าขอเช็กบิลแล้ว) */
+export default function MenuCard({ item, inCartQty = 0, onAdd, orderable = true }) {
   return (
     <article
       className={`card border border-base-300 bg-base-100 transition hover:-translate-y-0.5 hover:shadow-md ${
@@ -27,7 +28,7 @@ export default function MenuCard({ item, inCartQty = 0, onAdd }) {
         <p className="line-clamp-2 min-h-8 text-xs text-base-content/60">{item.description}</p>
         <div className="mt-2 flex items-center justify-between gap-2">
           <span className="font-display text-lg font-semibold text-primary">{formatMoney(item.price)}</span>
-          {item.available && (
+          {item.available && orderable && (
             <button
               type="button"
               className="btn btn-primary btn-sm btn-circle sm:btn-wide sm:w-auto sm:rounded-full sm:px-3"

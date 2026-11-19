@@ -4,6 +4,7 @@ import { Pencil, Plus, SearchX, Trash2, X } from 'lucide-react'
 import { useMenuFilter } from '../../../controllers/useMenu'
 import { useMenuManager } from '../../../controllers/useMenuManager'
 import MenuForm from '../../components/menu/MenuForm'
+import DeleteMenuModal from '../../components/menu/DeleteMenuModal'
 import SearchBar from '../../components/menu/SearchBar'
 import CategoryTabs from '../../components/menu/CategoryTabs'
 import Button from '../../components/common/Button'
@@ -17,6 +18,7 @@ export default function MenuManagePage() {
   const { query, setQuery, categoryId, setCategoryId, filtered } = useMenuFilter(menu)
   // null = ปิดฟอร์ม, 'new' = เพิ่มเมนูใหม่, object = เมนูที่กำลังแก้ไข
   const [editing, setEditing] = useState(null)
+  const [deleting, setDeleting] = useState(null) // เมนูที่กำลังยืนยันลบ (null = ปิดหน้าต่าง)
   const [actionError, setActionError] = useState('')
 
   const categoryName = (id) => categories.find((c) => c.id === id)?.name ?? '-'
@@ -36,9 +38,10 @@ export default function MenuManagePage() {
     }
   }
 
-  function handleDelete(item) {
-    if (!window.confirm(`ลบเมนู "${item.name}" ใช่หรือไม่?`)) return
-    runAction(() => removeItem(item.id))
+  // error จะโยนกลับไปให้หน้าต่างยืนยันลบแสดง
+  async function handleDelete() {
+    await removeItem(deleting.id)
+    setDeleting(null)
   }
 
   if (loading) return <LoadingState text="กำลังโหลดเมนู..." />
@@ -67,7 +70,7 @@ export default function MenuManagePage() {
         type="button"
         className="btn btn-ghost btn-sm btn-square text-error"
         disabled={saving}
-        onClick={() => handleDelete(item)}
+        onClick={() => setDeleting(item)}
         aria-label={`ลบ ${item.name}`}
       >
         <Trash2 size={16} aria-hidden="true" />
@@ -175,6 +178,15 @@ export default function MenuManagePage() {
           {/* คลิกพื้นหลังเพื่อปิด Modal */}
           <div className="modal-backdrop" onClick={() => setEditing(null)} />
         </div>
+      )}
+
+      {deleting && (
+        <DeleteMenuModal
+          item={deleting}
+          categoryName={categoryName(deleting.categoryId)}
+          onConfirm={handleDelete}
+          onClose={() => setDeleting(null)}
+        />
       )}
     </div>
   )

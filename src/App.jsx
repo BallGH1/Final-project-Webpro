@@ -8,15 +8,16 @@ import CartPage from './views/pages/customer/CartPage'
 import OrderStatusPage from './views/pages/customer/OrderStatusPage'
 import OrderBoardPage from './views/pages/staff/OrderBoardPage'
 import MenuManagePage from './views/pages/staff/MenuManagePage'
-import TableQrPage from './views/pages/staff/TableQrPage'
+import TablesPage from './views/pages/staff/TablesPage'
+import BillPage from './views/pages/staff/BillPage'
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
 
-      {/* ฝั่งลูกค้า: URL นี้คือสิ่งที่อยู่ใน QR Code ของแต่ละโต๊ะ */}
-      <Route path="/table/:tableId" element={<CustomerLayout />}>
+      {/* ฝั่งลูกค้า: URL ใน QR Code ของบิล — token เปลี่ยนทุกครั้งที่เปิดโต๊ะใหม่ */}
+      <Route path="/t/:token" element={<CustomerLayout />}>
         <Route index element={<MenuPage />} />
         <Route path="cart" element={<CartPage />} />
         <Route path="orders" element={<OrderStatusPage />} />
@@ -26,7 +27,8 @@ export default function App() {
       <Route path="/staff" element={<StaffLayout />}>
         <Route index element={<OrderBoardPage />} />
         <Route path="menu" element={<MenuManagePage />} />
-        <Route path="tables" element={<TableQrPage />} />
+        <Route path="tables" element={<TablesPage />} />
+        <Route path="tables/bill/:sessionId" element={<BillPage />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

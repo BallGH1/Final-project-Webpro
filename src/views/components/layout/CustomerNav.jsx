@@ -8,12 +8,11 @@ import { useCart } from '../../../controllers/cart/useCart'
  * - variant="bar": จอใหญ่ อยู่บน header
  */
 export default function CustomerNav({ variant = 'bar' }) {
-  const { tableId, count } = useCart()
-  const base = `/table/${tableId}`
+  const { basePath, count } = useCart()
   const links = [
-    { to: base, label: 'เมนู', Icon: UtensilsCrossed, end: true },
-    { to: `${base}/cart`, label: 'ตะกร้า', Icon: ShoppingBasket, badge: count },
-    { to: `${base}/orders`, label: 'ออร์เดอร์ของฉัน', Icon: ReceiptText },
+    { to: basePath, label: 'เมนู', Icon: UtensilsCrossed, end: true },
+    { to: `${basePath}/cart`, label: 'ตะกร้า', Icon: ShoppingBasket, badge: count },
+    { to: `${basePath}/orders`, label: 'ออร์เดอร์ & บิล', Icon: ReceiptText },
   ]
 
   if (variant === 'dock') {

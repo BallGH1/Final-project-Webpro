@@ -1,23 +1,30 @@
 // หน้าตะกร้า (ลูกค้า): ปรับจำนวน, ลบรายการ, ยืนยันการสั่งอาหาร
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useOutletContext } from 'react-router-dom'
 import { ShoppingBasket, Send, UtensilsCrossed } from 'lucide-react'
 import { useCart } from '../../../controllers/cart/useCart'
 import { usePlaceOrder } from '../../../controllers/usePlaceOrder'
+import { canOrder } from '../../../models/sessionModel'
 import CartItemRow from '../../components/cart/CartItemRow'
 import Button from '../../components/common/Button'
 import { EmptyState, ErrorState } from '../../components/common/StateMessages'
 import { formatMoney } from '../../../models/formatters'
 
 export default function CartPage() {
-  const { tableId, items, count, total, setQty, removeItem } = useCart()
+  const { tableId, basePath, items, count, total, setQty, removeItem } = useCart()
+  const { session, refreshSession, ordersState } = useOutletContext()
+  const orderable = canOrder(session.status)
   const { placeOrder, submitting, error } = usePlaceOrder()
   const [note, setNote] = useState('')
   const navigate = useNavigate()
 
   async function handleConfirm() {
     const order = await placeOrder(note)
-    if (order) navigate(`/table/${tableId}/orders`, { state: { placedOrderNo: order.orderNo } })
+    if (!order) return
+    // ให้ยอดรวมบิลและรายการออร์เดอร์อัปเดตทันที ไม่ต้องรอรอบ polling
+    refreshSession()
+    ordersState.refresh()
+    navigate(`${basePath}/orders`, { state: { placedOrderNo: order.orderNo } })
   }
 
   if (items.length === 0) {
@@ -27,7 +34,7 @@ export default function CartPage() {
         title="ตะกร้ายังว่างอยู่"
         text="เลือกเมนูที่ต้องการแล้วกดเพิ่มลงตะกร้า"
         action={
-          <Button to={`/table/${tableId}`}>
+          <Button to={basePath}>
             <UtensilsCrossed size={16} aria-hidden="true" />
             ไปเลือกเมนู
           </Button>
@@ -81,7 +88,8 @@ export default function CartPage() {
             </div>
           </div>
           {error && <ErrorState message={error} />}
-          <Button size="lg" className="btn-block" onClick={handleConfirm} disabled={submitting}>
+          {!orderable && <p className="text-sm text-warning">ขอเช็กบิลแล้ว จึงส่งออร์เดอร์เพิ่มไม่ได้</p>}
+          <Button size="lg" className="btn-block" onClick={handleConfirm} disabled={submitting || !orderable}>
             {submitting ? <span className="loading loading-spinner loading-sm" /> : <Send size={18} aria-hidden="true" />}
             {submitting ? 'กำลังส่งออร์เดอร์...' : 'ยืนยันการสั่งอาหาร'}
           </Button>

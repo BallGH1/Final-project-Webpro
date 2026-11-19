@@ -1,8 +1,11 @@
 // หน้า Dashboard ออร์เดอร์ (พนักงาน): ออร์เดอร์ใหม่เข้ามาเองทุกไม่กี่วินาที + เปลี่ยนสถานะ
 import { useState } from 'react'
-import { Ban, CircleCheck, Flame, Sparkles } from 'lucide-react'
+import { Ban, CircleCheck, Flame, HandCoins, Sparkles } from 'lucide-react'
 import { useOrders } from '../../../controllers/useOrders'
+import { useTables } from '../../../controllers/useTables'
+import { SESSION_STATUS } from '../../../models/sessionModel'
 import OrderCard from '../../components/order/OrderCard'
+import CancelOrderModal from '../../components/order/CancelOrderModal'
 import Button from '../../components/common/Button'
 import { EmptyState, ErrorState, LoadingState } from '../../components/common/StateMessages'
 import { NEXT_STATUS, STATUS_ACTION_LABEL, STATUS_LABEL } from '../../../models/orderModel'
@@ -17,6 +20,16 @@ export default function OrderBoardPage() {
   const [filter, setFilter] = useState('pending')
   const [actionError, setActionError] = useState('')
   const [busyId, setBusyId] = useState(null)
+  const [cancelTarget, setCancelTarget] = useState(null) // ออร์เดอร์ที่กำลังเลือกเหตุผลยกเลิก
+
+  // error จะโยนกลับไปให้หน้าต่างยกเลิกแสดง
+  async function handleCancel(reason) {
+    await changeStatus(cancelTarget.id, 'cancelled', reason)
+    setCancelTarget(null)
+  }
+  // โต๊ะที่ลูกค้ากดขอเช็กบิล — แจ้งเตือนบนหน้านี้ด้วย พนักงานจะได้ไม่พลาด
+  const { tables } = useTables()
+  const billingTables = tables.filter((t) => t.session?.status === SESSION_STATUS.BILLING)
 
   const countOf = (status) => (status === 'all' ? orders.length : orders.filter((o) => o.status === status).length)
   const visible = filter === 'all' ? orders : orders.filter((o) => o.status === filter)
@@ -48,6 +61,18 @@ export default function OrderBoardPage() {
           </p>
         )}
       </div>
+
+      {billingTables.length > 0 && (
+        <div role="status" className="alert alert-error alert-soft flex flex-wrap items-center gap-2">
+          <HandCoins size={18} aria-hidden="true" />
+          <span className="font-semibold">ขอเช็กบิล:</span>
+          {billingTables.map((table) => (
+            <Button key={table.id} to={`/staff/tables/bill/${table.session.id}`} size="sm" variant="secondary">
+              โต๊ะ {table.id}
+            </Button>
+          ))}
+        </div>
+      )}
 
       <div className="-mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
         <div role="tablist" aria-label="กรองตามสถานะ" className="tabs tabs-box w-max flex-nowrap bg-base-100">
@@ -91,7 +116,7 @@ export default function OrderBoardPage() {
                     size="sm"
                     variant={next === 'cancelled' ? 'ghost' : 'primary'}
                     disabled={busyId === order.id}
-                    onClick={() => handleChange(order.id, next)}
+                    onClick={() => (next === 'cancelled' ? setCancelTarget(order) : handleChange(order.id, next))}
                   >
                     {Icon && <Icon size={14} aria-hidden="true" />}
                     {STATUS_ACTION_LABEL[next]}
@@ -101,6 +126,10 @@ export default function OrderBoardPage() {
             />
           ))}
         </div>
+      )}
+
+      {cancelTarget && (
+        <CancelOrderModal order={cancelTarget} onConfirm={handleCancel} onClose={() => setCancelTarget(null)} />
       )}
     </div>
   )

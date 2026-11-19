@@ -29,6 +29,10 @@ export const NEXT_STATUS = {
   cancelled: [],
 }
 
+// เหตุผลสำเร็จรูปตอนยกเลิกออร์เดอร์ (พนักงานพิมพ์เหตุผลอื่นเองได้)
+export const CANCEL_REASONS = ['วัตถุดิบหมด', 'ลูกค้าขอยกเลิก', 'สั่งซ้ำ']
+export const MAX_REASON_LENGTH = 100
+
 export function isValidStatus(status) {
   return Object.hasOwn(STATUS_LABEL, status)
 }

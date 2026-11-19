@@ -37,5 +37,6 @@
     { "id": "B03", "seats": 8 },
     { "id": "B04", "seats": 8 }
   ],
-  "orders": []
+  "orders": [],
+  "sessions": []
 }

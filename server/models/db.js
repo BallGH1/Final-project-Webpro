@@ -17,7 +17,10 @@ async function init() {
     await copyFile(SEED_PATH, DB_PATH)
     console.log('[db] สร้าง data/db.json จาก db.seed.json')
   }
-  return JSON.parse(await readFile(DB_PATH, 'utf8'))
+  const db = JSON.parse(await readFile(DB_PATH, 'utf8'))
+  // db.json ที่สร้างก่อนมีระบบบิล จะยังไม่มี collection นี้
+  db.sessions ??= []
+  return db
 }
 
 function load() {
