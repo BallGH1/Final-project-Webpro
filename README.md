@@ -1,4 +1,4 @@
-# 🍲 Suki Order — ระบบจัดการออร์เดอร์ร้านสุกี้
+# 🍲 Suki Teeyai — ระบบจัดการออร์เดอร์ร้านสุกี้
 
 ลูกค้าสแกน QR ที่โต๊ะ → เลือกเมนู → ยืนยันออร์เดอร์ → พนักงานเห็นออร์เดอร์ใหม่อัตโนมัติ → เปลี่ยนสถานะ → ลูกค้าเห็นสถานะของตัวเอง
 
@@ -26,6 +26,14 @@ npm run dev        # รัน API (port 3001) + หน้าเว็บ (port 
 | `/table/:tableId/orders` | สถานะออร์เดอร์ของโต๊ะ | ลูกค้า |
 | `/staff` | Dashboard ออร์เดอร์ + เปลี่ยนสถานะ | พนักงาน |
 | `/staff/menu` | จัดการเมนู (เพิ่ม/แก้ไข/ลบ/เปิด-ปิดขาย) | พนักงาน |
+| `/staff/tables` | สร้างและพิมพ์ QR Code ประจำโต๊ะ | พนักงาน |
+
+## ใช้ QR Code สั่งอาหารจากโทรศัพท์
+
+1. รัน `npm run dev` บนคอม แล้วเปิด http://localhost:5173/staff/tables (ระบบใส่ IP ของเครื่องใน QR ให้อัตโนมัติ)
+2. โทรศัพท์ต้องต่อ **Wi-Fi วงเดียวกับคอม** แล้วสแกน QR ของโต๊ะ
+3. ถ้าเข้าไม่ได้: อนุญาต Node.js ผ่าน Windows Firewall (Private networks) หรือ Wi-Fi อาจบล็อกอุปกรณ์คุยกัน ให้ลองเปิด hotspot จากโทรศัพท์
+4. ต้องการให้คนนอกเครือข่ายสแกนได้ (เช่น นำเสนอออนไลน์): ใช้ tunnel (Cloudflare Tunnel / ngrok) แล้ววาง URL ที่ได้ลงช่อง "URL ของเว็บ" บนหน้า QR
 
 ## โครงสร้างแบบ MVC
 
@@ -61,6 +69,7 @@ src/                        ← หน้าเว็บ (React + Vite + Tailwin
 | GET | `/api/menu?category=&q=` | รายการเมนู |
 | POST / PUT / DELETE | `/api/menu`, `/api/menu/:id` | จัดการเมนู |
 | GET | `/api/tables`, `/api/tables/:id` | ข้อมูลโต๊ะ |
+| GET | `/api/server-info` | IP ของเครื่อง server (ใช้สร้าง URL ใน QR) |
 | GET | `/api/orders?tableId=&status=` | รายการออร์เดอร์ |
 | POST | `/api/orders` | สร้างออร์เดอร์ `{ tableId, items: [{ menuId, qty }], note }` |
 | PATCH | `/api/orders/:id/status` | เปลี่ยนสถานะ `{ status }` |

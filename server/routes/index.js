@@ -3,10 +3,12 @@ import { Router } from 'express'
 import * as menu from '../controllers/menuController.js'
 import * as table from '../controllers/tableController.js'
 import * as order from '../controllers/orderController.js'
+import { getServerInfo } from '../controllers/serverController.js'
 
 const router = Router()
 
 router.get('/health', (_req, res) => res.json({ ok: true }))
+router.get('/server-info', getServerInfo)
 
 router.get('/categories', menu.listCategories)
 

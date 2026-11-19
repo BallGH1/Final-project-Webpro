@@ -8,6 +8,7 @@ import CartPage from './views/pages/customer/CartPage'
 import OrderStatusPage from './views/pages/customer/OrderStatusPage'
 import OrderBoardPage from './views/pages/staff/OrderBoardPage'
 import MenuManagePage from './views/pages/staff/MenuManagePage'
+import TableQrPage from './views/pages/staff/TableQrPage'
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
       <Route path="/staff" element={<StaffLayout />}>
         <Route index element={<OrderBoardPage />} />
         <Route path="menu" element={<MenuManagePage />} />
+        <Route path="tables" element={<TableQrPage />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

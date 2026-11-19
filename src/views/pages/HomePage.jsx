@@ -11,7 +11,7 @@ export default function HomePage() {
     <main className="mx-auto max-w-3xl px-4 py-10">
       <header className="mb-8 text-center">
         <p className="text-5xl">🍲</p>
-        <h1 className="mt-2 text-3xl font-bold">Suki Order</h1>
+        <h1 className="mt-2 text-3xl font-bold">Suki Teeyai</h1>
         <p className="mt-1 text-stone-500">ระบบสั่งอาหารและจัดการออร์เดอร์ร้านสุกี้</p>
       </header>
 
