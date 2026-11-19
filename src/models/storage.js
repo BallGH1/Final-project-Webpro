@@ -1,0 +1,17 @@
+// อ่าน/เขียน localStorage อย่างปลอดภัย (บางเบราว์เซอร์/โหมดส่วนตัวอาจใช้ไม่ได้)
+export function readStorage(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key)) ?? fallback
+  } catch {
+    return fallback
+  }
+}
+
+export function writeStorage(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value))
+    return true
+  } catch {
+    return false
+  }
+}

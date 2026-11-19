@@ -1,0 +1,19 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependencies & build
+node_modules
+dist
+dist-ssr
+*.local
+
+# ฐานข้อมูลที่ใช้งานจริง (สร้างจาก db.seed.json อัตโนมัติ)
+server/data/db.json
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
