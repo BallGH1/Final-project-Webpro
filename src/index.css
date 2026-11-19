@@ -86,9 +86,54 @@
   --noise: 0;
 }
 
+/*
+ * สีตัวอักษรของป้าย/แถบแจ้งเตือนแบบ soft
+ * daisyUI ใช้สีเดียวกับพื้นเป็นสีตัวอักษร ป้ายสีเหลือง/เขียวบนพื้นสว่างจึงจางจนอ่านไม่ออก (contrast 1.8:1)
+ * จึงใช้เฉดเข้มของสีเดียวกันแทน ให้ผ่านเกณฑ์อ่านง่าย 4.5:1 (โหมดมืดใช้สีเดิมเพราะพื้นเข้มอยู่แล้ว)
+ */
+:root,
+[data-theme='suki'] {
+  --soft-warning-fg: oklch(47% 0.11 65);
+  --soft-success-fg: oklch(45% 0.11 155);
+  --soft-info-fg: oklch(47% 0.12 240);
+}
+[data-theme='suki-dark'] {
+  --soft-warning-fg: var(--color-warning);
+  --soft-success-fg: var(--color-success);
+  --soft-info-fg: var(--color-info);
+}
+.badge-soft.badge-warning,
+.alert-soft.alert-warning {
+  color: var(--soft-warning-fg);
+}
+.badge-soft.badge-success,
+.alert-soft.alert-success {
+  color: var(--soft-success-fg);
+}
+.badge-soft.badge-info,
+.alert-soft.alert-info {
+  color: var(--soft-info-fg);
+}
+
+/* ตัวอักษรเตือนบนพื้นสว่าง (ใช้แทน text-warning / text-info ที่จางเกินไปสำหรับข้อความ) */
+@utility text-warning-strong {
+  color: var(--soft-warning-fg);
+}
+@utility text-info-strong {
+  color: var(--soft-info-fg);
+}
+
 @theme {
   --font-sans: "Prompt", "Noto Sans Thai", "Leelawadee UI", Tahoma, Arial, sans-serif;
   --font-display: "Kanit", "Prompt", "Noto Sans Thai", Tahoma, sans-serif;
+}
+
+/*
+ * จองที่ให้ scrollbar เสมอ: สลับระหว่างหน้าสั้น (ไม่มี scrollbar) กับหน้ายาว เนื้อหาจะไม่ขยับซ้าย-ขวา
+ * ต้องอยู่นอก @layer เพราะ daisyUI ตั้ง scrollbar-gutter ที่ :root ไว้ใน layer ของตัวเอง (กฎนอก layer ชนะเสมอ)
+ */
+:root {
+  scrollbar-gutter: stable;
 }
 
 @layer base {

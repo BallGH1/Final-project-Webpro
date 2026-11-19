@@ -88,7 +88,7 @@ export default function CartPage() {
             </div>
           </div>
           {error && <ErrorState message={error} />}
-          {!orderable && <p className="text-sm text-warning">ขอเช็กบิลแล้ว จึงส่งออร์เดอร์เพิ่มไม่ได้</p>}
+          {!orderable && <p className="text-sm text-warning-strong">ขอเช็กบิลแล้ว จึงส่งออร์เดอร์เพิ่มไม่ได้</p>}
           <Button size="lg" className="btn-block" onClick={handleConfirm} disabled={submitting || !orderable}>
             {submitting ? <span className="loading loading-spinner loading-sm" /> : <Send size={18} aria-hidden="true" />}
             {submitting ? 'กำลังส่งออร์เดอร์...' : 'ยืนยันการสั่งอาหาร'}

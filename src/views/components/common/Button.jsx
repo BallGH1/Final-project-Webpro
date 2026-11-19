@@ -8,8 +8,9 @@ const VARIANTS = {
   ghost: 'btn-ghost',
 }
 
+// มือถือ: ปุ่มเล็กยังสูงอย่างน้อย 44px ให้นิ้วกดง่าย (จอใหญ่ใช้เมาส์ จึงเล็กได้)
 const SIZES = {
-  sm: 'btn-sm',
+  sm: 'btn-sm max-sm:min-h-11',
   md: '',
   lg: 'btn-lg',
 }

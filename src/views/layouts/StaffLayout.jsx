@@ -25,7 +25,7 @@ export default function StaffLayout() {
   const toggleTheme = () => setTheme((current) => (current === 'suki' ? 'suki-dark' : 'suki'))
 
   const navClass = ({ isActive }) =>
-    `btn btn-sm shrink-0 justify-start gap-2 md:btn-md ${isActive ? 'btn-primary btn-soft' : 'btn-ghost'}`
+    `btn btn-sm shrink-0 justify-start gap-2 max-md:min-h-11 md:btn-md ${isActive ? 'btn-primary btn-soft' : 'btn-ghost'}`
 
   return (
     <div data-theme={theme} className="min-h-screen bg-base-200 text-base-content">
@@ -37,7 +37,8 @@ export default function StaffLayout() {
         </div>
         <div className="flex flex-none items-center gap-1">
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
-          <Link to="/" className="btn btn-outline btn-sm border-base-300">
+          {/* มือถือเหลือแค่ไอคอน จึงต้องมี aria-label ให้ screen reader อ่านได้ */}
+          <Link to="/" aria-label="หน้าร้าน" className="btn btn-outline btn-sm border-base-300 max-sm:size-11">
             <Store size={16} aria-hidden="true" />
             <span className="hidden sm:inline">หน้าร้าน</span>
           </Link>

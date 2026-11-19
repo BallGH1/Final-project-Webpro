@@ -95,7 +95,7 @@ export default function OrderStatusPage() {
           }
         />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid items-start gap-4 md:grid-cols-2">
           {orders.map((order) => (
             <OrderCard key={order.id} order={order} showProgress />
           ))}

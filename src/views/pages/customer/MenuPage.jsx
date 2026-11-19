@@ -65,7 +65,7 @@ export default function MenuPage() {
           <div key={toast.at} className="alert alert-success py-2.5 shadow-lg">
             <CircleCheck size={18} aria-hidden="true" />
             <span>เพิ่ม {toast.name} แล้ว</span>
-            <Link to={`${basePath}/cart`} className="btn btn-xs btn-ghost underline">
+            <Link to={`${basePath}/cart`} className="btn btn-sm btn-ghost underline max-sm:min-h-11">
               ดูตะกร้า
             </Link>
           </div>

@@ -5,6 +5,7 @@ import { useMenuFilter } from '../../../controllers/useMenu'
 import { useMenuManager } from '../../../controllers/useMenuManager'
 import MenuForm from '../../components/menu/MenuForm'
 import DeleteMenuModal from '../../components/menu/DeleteMenuModal'
+import Modal from '../../components/common/Modal'
 import SearchBar from '../../components/menu/SearchBar'
 import CategoryTabs from '../../components/menu/CategoryTabs'
 import Button from '../../components/common/Button'
@@ -63,12 +64,12 @@ export default function MenuManagePage() {
 
   const rowActions = (item) => (
     <div className="flex justify-end gap-1">
-      <button type="button" className="btn btn-ghost btn-sm btn-square" onClick={() => setEditing(item)} aria-label={`แก้ไข ${item.name}`}>
+      <button type="button" className="btn btn-ghost btn-sm btn-square max-sm:size-11" onClick={() => setEditing(item)} aria-label={`แก้ไข ${item.name}`}>
         <Pencil size={16} aria-hidden="true" />
       </button>
       <button
         type="button"
-        className="btn btn-ghost btn-sm btn-square text-error"
+        className="btn btn-ghost btn-sm btn-square text-error max-sm:size-11"
         disabled={saving}
         onClick={() => setDeleting(item)}
         aria-label={`ลบ ${item.name}`}
@@ -151,33 +152,29 @@ export default function MenuManagePage() {
         </>
       )}
 
-      {/* Modal เพิ่ม/แก้ไขเมนู (modal ของ DaisyUI แบบ Lab 11) */}
+      {/* Modal เพิ่ม/แก้ไขเมนู (modal ของ DaisyUI แบบ Lab 11 ผ่าน component Modal กลาง) */}
       {editing && (
-        <div className="modal modal-open modal-bottom sm:modal-middle" role="dialog" aria-labelledby="menu-modal-title">
-          <div className="modal-box max-h-[90vh] max-w-2xl">
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm btn-circle absolute top-3 right-3"
-              onClick={() => setEditing(null)}
-              aria-label="ปิด"
-            >
-              <X size={18} aria-hidden="true" />
-            </button>
-            <h2 id="menu-modal-title" className="mb-2 text-xl font-semibold">
-              {editing === 'new' ? 'เพิ่มเมนูใหม่' : `แก้ไข: ${editing.name}`}
-            </h2>
-            <MenuForm
-              key={editing === 'new' ? 'new' : editing.id}
-              categories={categories}
-              initialValue={editing === 'new' ? null : editing}
-              saving={saving}
-              onSubmit={handleSubmit}
-              onCancel={() => setEditing(null)}
-            />
-          </div>
-          {/* คลิกพื้นหลังเพื่อปิด Modal */}
-          <div className="modal-backdrop" onClick={() => setEditing(null)} />
-        </div>
+        <Modal onClose={() => setEditing(null)} locked={saving} labelledBy="menu-modal-title" boxClassName="max-h-[90vh] max-w-2xl">
+          <button
+            type="button"
+            className="btn btn-ghost btn-circle absolute top-3 right-3 max-sm:size-11"
+            onClick={() => setEditing(null)}
+            aria-label="ปิด"
+          >
+            <X size={18} aria-hidden="true" />
+          </button>
+          <h2 id="menu-modal-title" className="mb-2 text-xl font-semibold">
+            {editing === 'new' ? 'เพิ่มเมนูใหม่' : `แก้ไข: ${editing.name}`}
+          </h2>
+          <MenuForm
+            key={editing === 'new' ? 'new' : editing.id}
+            categories={categories}
+            initialValue={editing === 'new' ? null : editing}
+            saving={saving}
+            onSubmit={handleSubmit}
+            onCancel={() => setEditing(null)}
+          />
+        </Modal>
       )}
 
       {deleting && (

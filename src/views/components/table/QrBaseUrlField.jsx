@@ -9,7 +9,7 @@ export default function QrBaseUrlField({ baseUrl, onChange, addresses, valid }) 
           <label htmlFor="qr-base-url" className="fieldset-legend pt-0">
             URL ของเว็บที่ใส่ใน QR
           </label>
-          <label className={`input w-full ${valid ? '' : 'input-error'}`}>
+          <label className={`input w-full max-sm:min-h-11 ${valid ? '' : 'input-error'}`}>
             <Link2 size={16} className="opacity-50" aria-hidden="true" />
             <input
               id="qr-base-url"
@@ -37,7 +37,7 @@ export default function QrBaseUrlField({ baseUrl, onChange, addresses, valid }) 
               <button
                 key={address}
                 type="button"
-                className="btn btn-xs btn-outline rounded-full border-base-300"
+                className="btn btn-sm btn-outline rounded-full border-base-300 max-sm:min-h-11"
                 onClick={() => onChange(`${window.location.protocol}//${address}${window.location.port ? `:${window.location.port}` : ''}`)}
               >
                 {address}

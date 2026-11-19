@@ -31,7 +31,7 @@ export default function MenuCard({ item, inCartQty = 0, onAdd, orderable = true 
           {item.available && orderable && (
             <button
               type="button"
-              className="btn btn-primary btn-sm btn-circle sm:btn-wide sm:w-auto sm:rounded-full sm:px-3"
+              className="btn btn-primary btn-sm btn-circle max-sm:size-11 sm:btn-wide sm:w-auto sm:rounded-full sm:px-3"
               onClick={() => onAdd(item)}
               aria-label={`เพิ่ม ${item.name} ลงตะกร้า`}
             >

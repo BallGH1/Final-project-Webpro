@@ -44,7 +44,7 @@ export default function CustomerLayout() {
         <header className="sticky top-0 z-20 border-b border-base-300 bg-base-100/95 backdrop-blur">
           <div className="navbar mx-auto min-h-14 max-w-5xl gap-3 px-4">
             <div className="flex-1">
-              <Link to={customerPath(token)} aria-label="กลับไปหน้าเมนู">
+              <Link to={customerPath(token)} aria-label="กลับไปหน้าเมนู" className="flex min-h-11 items-center">
                 <Logo />
               </Link>
             </div>

@@ -15,7 +15,7 @@ export default function CategoryTabs({ categories, value, onChange }) {
             role="tab"
             aria-selected={active}
             onClick={() => onChange(tab.id)}
-            className={`btn btn-sm shrink-0 rounded-full font-medium ${
+            className={`btn btn-sm shrink-0 rounded-full font-medium max-sm:min-h-11 ${
               active ? 'btn-primary' : 'border-base-300 bg-base-100 hover:bg-base-200'
             }`}
           >

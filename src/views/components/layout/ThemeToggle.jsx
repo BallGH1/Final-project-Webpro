@@ -6,7 +6,7 @@ export default function ThemeToggle({ theme, onToggle }) {
   return (
     <button
       type="button"
-      className="btn btn-ghost btn-sm btn-square"
+      className="btn btn-ghost btn-sm btn-square max-sm:size-11"
       onClick={onToggle}
       aria-label={isDark ? 'เปลี่ยนเป็นโหมดสว่าง' : 'เปลี่ยนเป็นโหมดมืด'}
       title={isDark ? 'โหมดสว่าง' : 'โหมดมืด'}

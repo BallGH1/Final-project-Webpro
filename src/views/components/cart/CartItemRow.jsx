@@ -14,16 +14,16 @@ export default function CartItemRow({ line, onChangeQty, onRemove }) {
       </div>
 
       <div className="join items-center" aria-label={`จำนวน ${line.name}`}>
-        <button type="button" aria-label="ลดจำนวน" className="btn join-item btn-sm btn-square" onClick={() => onChangeQty(line.qty - 1)}>
+        <button type="button" aria-label="ลดจำนวน" className="btn join-item btn-sm btn-square max-sm:size-11" onClick={() => onChangeQty(line.qty - 1)}>
           <Minus size={14} aria-hidden="true" />
         </button>
-        <span className="join-item flex h-8 w-9 items-center justify-center border-y border-base-300 bg-base-100 text-sm font-semibold">
+        <span className="join-item flex h-8 w-9 items-center justify-center border-y border-base-300 bg-base-100 text-sm font-semibold max-sm:h-11">
           {line.qty}
         </span>
         <button
           type="button"
           aria-label="เพิ่มจำนวน"
-          className="btn join-item btn-sm btn-square"
+          className="btn join-item btn-sm btn-square max-sm:size-11"
           onClick={() => onChangeQty(line.qty + 1)}
           disabled={line.qty >= MAX_QTY}
         >
@@ -36,7 +36,7 @@ export default function CartItemRow({ line, onChangeQty, onRemove }) {
         type="button"
         onClick={onRemove}
         aria-label={`ลบ ${line.name}`}
-        className="btn btn-ghost btn-sm btn-square text-base-content/50 hover:text-error"
+        className="btn btn-ghost btn-sm btn-square text-base-content/70 hover:text-error max-sm:size-11"
       >
         <Trash2 size={16} aria-hidden="true" />
       </button>

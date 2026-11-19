@@ -3,6 +3,7 @@ import { Ban, CircleCheck, Flame } from 'lucide-react'
 import { ORDER_STATUS } from '../../../models/orderModel'
 import { formatMoney } from '../../../models/formatters'
 import Button from '../common/Button'
+import Modal from '../common/Modal'
 
 const TOAST_MS = 4000
 
@@ -35,10 +36,10 @@ function StatusToast({ alert, onDismiss }) {
 /** popup กลางจอเมื่อออร์เดอร์ถูกยกเลิก — ต้องกด "รับทราบ" จึงจะปิด */
 function CancelledPopup({ alert, onDismiss }) {
   const { order } = alert
+  const dismiss = () => onDismiss(alert.key)
   return (
-    <div role="alertdialog" aria-modal="true" aria-labelledby={`cancel-${alert.key}`} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="card w-full max-w-sm bg-base-100 shadow-xl">
-        <div className="card-body items-center gap-3 p-6 text-center">
+    <Modal role="alertdialog" onClose={dismiss} labelledBy={`cancel-${alert.key}`} boxClassName="max-w-sm">
+        <div className="flex flex-col items-center gap-3 text-center">
           <span className="flex size-14 items-center justify-center rounded-full bg-error/15 text-error">
             <Ban size={28} aria-hidden="true" />
           </span>
@@ -58,13 +59,12 @@ function CancelledPopup({ alert, onDismiss }) {
               </li>
             ))}
           </ul>
-          <p className="text-xs text-base-content/60">ยอดของออร์เดอร์นี้ไม่ถูกนับในบิล สามารถสั่งเมนูอื่นแทนได้</p>
-          <Button className="btn-block" onClick={() => onDismiss(alert.key)}>
+          <p className="text-xs text-base-content/70">ยอดของออร์เดอร์นี้ไม่ถูกนับในบิล สามารถสั่งเมนูอื่นแทนได้</p>
+          <Button className="btn-block" onClick={dismiss}>
             รับทราบ
           </Button>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -83,7 +83,7 @@ export default function OrderAlerts({ alerts, onDismiss }) {
         </div>
       )}
       {/* ยกเลิกหลายออร์เดอร์พร้อมกัน → แสดงทีละอัน กดรับทราบแล้วอันถัดไปจะขึ้นมา */}
-      {cancelled && <CancelledPopup alert={cancelled} onDismiss={onDismiss} />}
+      {cancelled && <CancelledPopup key={cancelled.key} alert={cancelled} onDismiss={onDismiss} />}
     </>
   )
 }

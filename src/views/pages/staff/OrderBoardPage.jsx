@@ -83,7 +83,7 @@ export default function OrderBoardPage() {
               role="tab"
               aria-selected={filter === status}
               onClick={() => setFilter(status)}
-              className={`tab gap-2 whitespace-nowrap ${filter === status ? 'tab-active' : ''}`}
+              className={`tab gap-2 whitespace-nowrap max-sm:min-h-11 ${filter === status ? 'tab-active' : ''}`}
             >
               {status === 'all' ? 'ทั้งหมด' : STATUS_LABEL[status]}
               <span className={`badge badge-sm ${status === 'pending' && countOf(status) > 0 ? 'badge-warning' : 'badge-ghost'}`}>
@@ -102,7 +102,7 @@ export default function OrderBoardPage() {
       ) : visible.length === 0 ? (
         <EmptyState icon={Sparkles} title="ไม่มีออร์เดอร์ในสถานะนี้" />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {visible.map((order) => (
             <OrderCard
               key={order.id}
