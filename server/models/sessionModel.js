@@ -5,7 +5,7 @@ import { randomBytes } from 'node:crypto'
 import { getAll, nextId, update } from './db.js'
 import { HttpError } from '../utils/HttpError.js'
 import { ORDER_STATUS } from '../../shared/orderStatus.js'
-import { SESSION_STATUS, canOrder, isActiveSession } from '../../shared/sessionStatus.js'
+import { CALL_REASONS, SESSION_STATUS, canOrder, isActiveSession } from '../../shared/sessionStatus.js'
 
 // token สุ่มจาก crypto (เดาไม่ได้ ต่างจาก Math.random) ยาว 8 ตัวอักษร
 function createToken(sessions) {
@@ -85,6 +85,7 @@ export function open(tableId) {
       openedAt: new Date().toISOString(),
       billRequestedAt: null,
       closedAt: null,
+      staffCall: null, // { reason, at } เมื่อลูกค้ากดเรียกพนักงาน
     }
     db.sessions.push(session)
     return summarize(session, db.orders)
@@ -143,7 +144,29 @@ export function close(id) {
 
     session.status = SESSION_STATUS.CLOSED
     session.closedAt = new Date().toISOString()
+    session.staffCall = null
     session.total = summary.total
+    return summarize(session, db.orders)
+  })
+}
+
+/** ลูกค้า: เรียกพนักงาน (เรียกซ้ำได้ — เปลี่ยนเหตุผล/เวลาล่าสุด) */
+export function callStaff(token, reason) {
+  return update((db) => {
+    const session = requireByToken(db.sessions, token)
+    if (session.status === SESSION_STATUS.CLOSED) throw new HttpError(410, 'บิลนี้ปิดแล้ว')
+    if (!CALL_REASONS.includes(reason)) throw new HttpError(400, 'เหตุผลที่เรียกพนักงานไม่ถูกต้อง')
+    session.staffCall = { reason, at: new Date().toISOString() }
+    return summarize(session, db.orders)
+  })
+}
+
+/** พนักงาน: รับทราบการเรียก (กล่องคำพูดบนผังหายไป) */
+export function acknowledgeCall(id) {
+  return update((db) => {
+    const session = db.sessions.find((s) => s.id === Number(id))
+    if (!session) throw new HttpError(404, 'ไม่พบบิลนี้')
+    session.staffCall = null
     return summarize(session, db.orders)
   })
 }

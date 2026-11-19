@@ -32,3 +32,11 @@ export async function createOrderByToken(req, res) {
 export async function requestBill(req, res) {
   res.json(await Session.requestBill(req.params.token))
 }
+
+export async function callStaff(req, res) {
+  res.json(await Session.callStaff(req.params.token, req.body?.reason))
+}
+
+export async function acknowledgeCall(req, res) {
+  res.json(await Session.acknowledgeCall(req.params.id))
+}

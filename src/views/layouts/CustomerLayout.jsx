@@ -1,6 +1,6 @@
 // Layout ฝั่งลูกค้า (/t/:token): ตรวจ token จาก QR → แสดงหน้าสั่งอาหารของบิลนั้น
 // ส่งข้อมูลบิลให้หน้าลูกทางหน้า Outlet context (อ่านด้วย useOutletContext)
-import { Link, Outlet, useParams } from 'react-router-dom'
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom'
 import { Armchair, House, ReceiptText } from 'lucide-react'
 import { useSession } from '../../controllers/useSession'
 import { useOrders } from '../../controllers/useOrders'
@@ -10,6 +10,7 @@ import { CartProvider } from '../../controllers/cart/CartProvider'
 import { SESSION_STATUS, customerPath } from '../../models/sessionModel'
 import { formatMoney } from '../../models/formatters'
 import CustomerNav from '../components/layout/CustomerNav'
+import CallStaffButton from '../components/layout/CallStaffButton'
 import Button from '../components/common/Button'
 import Logo from '../components/common/Logo'
 import { ErrorState, LoadingState } from '../components/common/StateMessages'
@@ -17,7 +18,8 @@ import SessionClosedPage from '../pages/customer/SessionClosedPage'
 
 export default function CustomerLayout() {
   const { token } = useParams()
-  const { session, loading, error, refresh, requestBill } = useSession(token)
+  const { pathname } = useLocation()
+  const { session, loading, error, refresh, requestBill, callStaff } = useSession(token)
   // ดึงออร์เดอร์ที่ Layout (ไม่ใช่ที่หน้าออร์เดอร์) เพื่อให้แจ้งเตือนเด้งได้ทุกหน้าของลูกค้า
   const active = Boolean(session) && session.status !== SESSION_STATUS.CLOSED
   const ordersState = useOrders({ token, enabled: active })
@@ -51,6 +53,7 @@ export default function CustomerLayout() {
             <div className="hidden sm:block">
               <CustomerNav variant="bar" />
             </div>
+            <CallStaffButton staffCall={session.staffCall} onCall={callStaff} />
             <span className="badge badge-primary badge-soft gap-1.5 px-3 py-3 font-semibold">
               <Armchair size={14} aria-hidden="true" />
               โต๊ะ {session.tableId}
@@ -67,7 +70,10 @@ export default function CustomerLayout() {
               </span>
             </div>
           )}
-          <Outlet context={{ session, refreshSession: refresh, requestBill, ordersState }} />
+          {/* key เปลี่ยนตามหน้า → เนื้อหาหน้าใหม่จางเข้า */}
+          <div key={pathname} className="animate-page-in">
+            <Outlet context={{ session, refreshSession: refresh, requestBill, ordersState }} />
+          </div>
         </main>
 
         <div className="sm:hidden">

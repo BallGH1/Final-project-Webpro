@@ -1,10 +1,12 @@
 // Layout หลังร้าน: Navbar + Sidebar + <Outlet /> (แบบ AdminLayout ใน Lab 11)
 import { useEffect, useState } from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { ClipboardList, LayoutGrid, Store, UtensilsCrossed } from 'lucide-react'
 import Logo from '../components/common/Logo'
 import ThemeToggle from '../components/layout/ThemeToggle'
 import { readStorage, writeStorage } from '../../models/storage'
+import { useSlidingIndicator } from '../../controllers/useSlidingIndicator'
+import SlidingIndicator from '../components/common/SlidingIndicator'
 
 const LINKS = [
   { to: '/staff', label: 'ออร์เดอร์', Icon: ClipboardList, end: true },
@@ -24,8 +26,13 @@ export default function StaffLayout() {
 
   const toggleTheme = () => setTheme((current) => (current === 'suki' ? 'suki-dark' : 'suki'))
 
+  // พื้นหลังของเมนูที่เลือกเลื่อนไหลตามหน้า (แท็บมี z-10 อยู่เหนือพื้นหลัง)
+  const { pathname } = useLocation()
+  const { containerRef: navContainerRef, indicatorRef: navIndicatorRef } = useSlidingIndicator(pathname)
   const navClass = ({ isActive }) =>
-    `btn btn-sm shrink-0 justify-start gap-2 max-md:min-h-11 md:btn-md ${isActive ? 'btn-primary btn-soft' : 'btn-ghost'}`
+    `btn btn-sm btn-ghost relative z-10 shrink-0 justify-start gap-2 hover:bg-base-200/60 max-md:min-h-11 md:btn-md ${
+      isActive ? 'text-primary hover:bg-transparent' : ''
+    }`
 
   return (
     <div data-theme={theme} className="min-h-screen bg-base-200 text-base-content">
@@ -45,11 +52,12 @@ export default function StaffLayout() {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-4 p-4 md:grid-cols-[220px_1fr] md:gap-6 md:p-6 print:block print:p-0">
+      <div className="mx-auto grid w-full max-w-[2200px] grid-cols-1 gap-4 p-4 md:grid-cols-[220px_1fr] md:gap-6 md:p-6 print:block print:p-0">
         <aside className="h-fit rounded-box bg-base-100 p-2 shadow-sm md:sticky md:top-20 md:p-3 print:hidden">
           <p className="mb-2 hidden px-3 text-xs font-semibold tracking-wider opacity-50 md:block">เมนูพนักงาน</p>
           {/* มือถือ: เมนูเรียงแนวนอน, จอ md ขึ้นไป: เรียงแนวตั้งใน Sidebar */}
-          <nav aria-label="เมนูพนักงาน" className="flex flex-row gap-1 overflow-x-auto md:flex-col">
+          <nav ref={navContainerRef} aria-label="เมนูพนักงาน" className="relative flex flex-row gap-1 overflow-x-auto md:flex-col">
+            <SlidingIndicator indicatorRef={navIndicatorRef} className="rounded-field bg-primary/10" />
             {LINKS.map(({ to, label, Icon, end }) => (
               <NavLink key={to} to={to} end={end} className={navClass}>
                 <Icon size={18} aria-hidden="true" />
@@ -60,7 +68,10 @@ export default function StaffLayout() {
         </aside>
 
         <main className="min-w-0">
-          <Outlet />
+          {/* key เปลี่ยนตามหน้า → เนื้อหาหน้าใหม่จางเข้า */}
+          <div key={pathname} className="animate-page-in">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

@@ -18,7 +18,10 @@ export default function CartItemRow({ line, onChangeQty, onRemove }) {
           <Minus size={14} aria-hidden="true" />
         </button>
         <span className="join-item flex h-8 w-9 items-center justify-center border-y border-base-300 bg-base-100 text-sm font-semibold max-sm:h-11">
-          {line.qty}
+          {/* key เปลี่ยนตามจำนวน → ตัวเลขเด้งนุ่ม ๆ ทุกครั้งที่กด + / − */}
+          <span key={line.qty} className="inline-block animate-pop">
+            {line.qty}
+          </span>
         </span>
         <button
           type="button"

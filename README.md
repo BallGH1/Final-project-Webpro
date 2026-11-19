@@ -26,7 +26,7 @@ npm run dev        # รัน API (port 3001) + หน้าเว็บ (port 
 | `/t/:token/orders` | สถานะออร์เดอร์ของบิลนี้ + ยอดรวม + ปุ่มเช็กบิล | ลูกค้า |
 | `/staff` | Dashboard ออร์เดอร์ + เปลี่ยนสถานะ + แจ้งเตือนโต๊ะขอเช็กบิล | พนักงาน |
 | `/staff/menu` | จัดการเมนู (เพิ่ม/แก้ไข/ลบ/เปิด-ปิดขาย) | พนักงาน |
-| `/staff/tables` | สถานะทุกโต๊ะ + เปิดโต๊ะ (ได้ QR ของบิลใหม่) | พนักงาน |
+| `/staff/tables` | ผังร้าน (ลาก/ซูมได้) หรือรายการโต๊ะ + เปิดโต๊ะ + กล่องคำพูดเมื่อขอเช็กบิล/เรียกพนักงาน | พนักงาน |
 | `/staff/tables/bill/:sessionId` | บิลรวมของโต๊ะ + ชำระแล้ว / ปิดโต๊ะ | พนักงาน |
 
 ## บิลและ QR Code (เปิดโต๊ะ 1 ครั้ง = บิล 1 ใบ = QR 1 ชุด)
@@ -93,6 +93,8 @@ src/                        ← หน้าเว็บ (React + Vite + Tailwin
 | GET | `/api/s/:token/orders` | ลูกค้า: ออร์เดอร์ของบิลนี้ |
 | POST | `/api/s/:token/orders` | ลูกค้า: สร้างออร์เดอร์ `{ items: [{ menuId, qty }], note }` |
 | POST | `/api/s/:token/request-bill` | ลูกค้า: ขอเช็กบิล |
+| POST | `/api/s/:token/call-staff` | ลูกค้า: เรียกพนักงาน `{ reason }` |
+| POST | `/api/sessions/:id/ack-call` | พนักงาน: รับทราบการเรียก |
 | GET | `/api/server-info` | IP ของเครื่อง server (ใช้สร้าง URL ใน QR) |
 | GET | `/api/orders?tableId=&status=` | รายการออร์เดอร์ (พนักงาน) |
 | PATCH | `/api/orders/:id/status` | เปลี่ยนสถานะ `{ status, reason }` (`reason` จำเป็นเมื่อยกเลิก) |

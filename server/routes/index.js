@@ -26,12 +26,14 @@ router.post('/tables/:id/open', session.openTable)
 // บิล (พนักงาน)
 router.get('/sessions/:id/bill', session.getBill)
 router.post('/sessions/:id/close', session.closeSession)
+router.post('/sessions/:id/ack-call', session.acknowledgeCall)
 
 // ลูกค้า: ทุกอย่างผ่าน token ใน QR — สั่งอาหารด้วยเลขโต๊ะตรง ๆ ไม่ได้
 router.get('/s/:token', session.getByToken)
 router.get('/s/:token/orders', session.listOrdersByToken)
 router.post('/s/:token/orders', session.createOrderByToken)
 router.post('/s/:token/request-bill', session.requestBill)
+router.post('/s/:token/call-staff', session.callStaff)
 
 // ออร์เดอร์ (พนักงาน)
 router.get('/orders', order.listOrders)

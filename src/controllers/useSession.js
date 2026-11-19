@@ -1,7 +1,7 @@
 // Controller: บิลของลูกค้าจาก token ใน URL (/t/:token)
 // ดึงใหม่ทุก POLL_INTERVAL เพื่อให้หน้าลูกค้ารู้ทันทีเมื่อพนักงานปิดโต๊ะ
 import { useCallback, useEffect, useState } from 'react'
-import { getSession, requestBill as requestBillApi } from '../models/sessionModel'
+import { callStaff as callStaffApi, getSession, requestBill as requestBillApi } from '../models/sessionModel'
 import { POLL_INTERVAL } from '../models/orderModel'
 
 export function useSession(token) {
@@ -40,5 +40,11 @@ export function useSession(token) {
     return updated
   }
 
-  return { session, loading, error, refresh, requestBill }
+  async function callStaff(reason) {
+    const updated = await callStaffApi(token, reason)
+    setSession(updated)
+    return updated
+  }
+
+  return { session, loading, error, refresh, requestBill, callStaff }
 }

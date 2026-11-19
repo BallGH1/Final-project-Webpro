@@ -149,3 +149,174 @@
     @apply cursor-pointer disabled:cursor-not-allowed;
   }
 }
+
+/* ======================================================================
+ * Animation แนวนุ่ม ๆ (CSS ล้วน ไม่ใช้ไลบรารี)
+ * - เข้า: ease-out แบบนุ่ม (--ease-soft) 200–320ms / ออก: เร็วกว่าเข้าเล็กน้อย
+ * - ขยับด้วย transform / opacity เป็นหลัก หน้าไม่กระตุก
+ * - ผู้ใช้ที่ตั้งค่า "ลดการเคลื่อนไหว" ในเครื่อง จะไม่เห็น animation (ดูท้ายไฟล์)
+ * ====================================================================== */
+:root {
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft-in: cubic-bezier(0.4, 0, 1, 1);
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes toast-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(-8px) scale(0.97); }
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes modal-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(6px) scale(0.97); }
+}
+@keyframes sheet-in {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+@keyframes sheet-out {
+  from { transform: none; }
+  to { transform: translateY(100%); }
+}
+@keyframes pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+@keyframes new-glow {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-primary) 45%, transparent); }
+  100% { box-shadow: 0 0 0 14px color-mix(in oklab, var(--color-primary) 0%, transparent); }
+}
+/* เริ่มจากกรอบ 2px เท่ากับ ring เดิมของการ์ด แล้วขยายออกจาง ๆ */
+@keyframes soft-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-error) 30%, transparent); }
+  50% { box-shadow: 0 0 0 9px color-mix(in oklab, var(--color-error) 0%, transparent); }
+}
+
+/* เนื้อหาหน้าใหม่จางเข้าตอนเปลี่ยนหน้า */
+.animate-page-in { animation: fade-in 220ms var(--ease-soft) both; }
+/* การ์ดเลื่อนขึ้นพร้อมจางเข้า (ใส่ animation-delay เพื่อให้ขึ้นทีละใบ) */
+.animate-fade-up { animation: fade-up 320ms var(--ease-soft) both; }
+/* ออร์เดอร์ใหม่: กรอบเรืองแสงจาง ๆ 2 ครั้ง */
+.animate-new-glow { animation: fade-up 320ms var(--ease-soft) both, new-glow 1.2s ease-out 2; }
+/* โต๊ะขอเช็กบิล: กรอบแดงเต้นช้า ๆ */
+.animate-soft-pulse { animation: soft-pulse 2.4s ease-in-out infinite; }
+/* ตัวเลขเด้ง (ตะกร้า / จำนวน) — ใส่ key ให้ element เปลี่ยนเมื่อค่าเปลี่ยน */
+.animate-pop { animation: pop 320ms var(--ease-soft); }
+
+/* Toast: เลื่อนลงมาตอนเข้า, ลอยขึ้นจางหายตอนออก */
+.toast > * { animation: toast-in 280ms var(--ease-soft) both; }
+.toast > .toast-leaving { animation: toast-out 220ms var(--ease-soft-in) both; }
+
+/* Modal (<dialog>): จอใหญ่จางเข้า+ขยาย, มือถือเลื่อนขึ้นจากล่างแบบ bottom sheet */
+.modal[open] { animation: fade-in 220ms var(--ease-soft) both; }
+.modal[open] .modal-box { animation: modal-in 280ms var(--ease-soft) both; }
+.modal[open].modal-closing { animation: fade-out 180ms var(--ease-soft-in) both; }
+.modal[open].modal-closing .modal-box { animation: modal-out 180ms var(--ease-soft-in) both; }
+@media (width < 40rem) {
+  .modal-bottom[open] .modal-box { animation: sheet-in 320ms var(--ease-soft) both; }
+  .modal-bottom[open].modal-closing .modal-box { animation: sheet-out 200ms var(--ease-soft-in) both; }
+}
+
+/* ปุ่มยุบลงเล็กน้อยตอนกด ให้รู้ว่ากดติด */
+.btn {
+  transition:
+    scale 160ms var(--ease-soft),
+    color 200ms var(--ease-soft),
+    background-color 200ms var(--ease-soft),
+    border-color 200ms var(--ease-soft),
+    box-shadow 200ms var(--ease-soft);
+}
+.btn:active:not(:disabled):not(.btn-disabled) { scale: 0.96; }
+
+/* แถบขั้นตอนออร์เดอร์: สีไหลไปขั้นถัดไปแบบนุ่ม */
+.step::before,
+.step::after {
+  transition:
+    background-color 500ms var(--ease-soft),
+    color 500ms var(--ease-soft);
+}
+
+/* ลดการเคลื่อนไหวตามการตั้งค่าเครื่อง (กฎ Accessibility) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * ตัวเลขในวงกลมของแถบขั้นตอน (steps ของ daisyUI)
+ * ฟอนต์ไทย (Prompt) เผื่อที่บน-ล่างไว้ให้สระ/วรรณยุกต์ ตัวเลขที่ไม่มีสระจึงเยื้องจากกลางวงกลม
+ * line-height: 1 ตัดที่เผื่อนั้นออก แล้วให้ grid จัดกึ่งกลางตามตัวอักษรจริง
+ */
+.step:not(:has(.step-icon))::after {
+  line-height: 1;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * ป้าย (badge) ของ daisyUI สูงคงที่ ภาษาไทยที่มีสระ+วรรณยุกต์ซ้อนกัน (เช่น "เนื้อ") จึงชนขอบบน
+ * ให้สูงตามเนื้อหา + เว้นบน-ล่างเท่ากัน ตัวอักษรจะอยู่กลางป้ายและไม่ชนขอบ (ความสูงขั้นต่ำยังเท่าเดิม)
+ */
+.badge {
+  height: auto;
+  min-height: var(--size);
+  /* บนมากกว่าล่างครึ่งพิกเซล: ฟอนต์ Prompt วางตัวอักษรค่อนขึ้นบนเล็กน้อย (วัดจากพิกเซลจริงแล้ว) */
+  padding-top: 0.21875rem;
+  padding-bottom: 0.15625rem;
+  line-height: 1.5;
+}
+/* ป้ายเล็กสุด (ตัวเลขบนไอคอนตะกร้า) มีแต่ตัวเลข ไม่ต้องเผื่อที่ให้สระ — คงขนาดเล็กเท่าเดิม */
+.badge-xs {
+  padding-block: 0;
+  line-height: 1;
+}
+/* ป้ายที่มีแต่ตัวเลข (เช่น จำนวนออร์เดอร์ในแท็บ): ตัวเลขไม่มีสระ จึงเว้นบน-ล่างเท่ากันพอดี */
+.badge-num {
+  padding-block: 0.1875rem;
+  font-variant-numeric: tabular-nums;
+}
+.badge-xs.badge-num {
+  padding-block: 0;
+}
+
+/* กล่องคำพูดเหนือโต๊ะ: เด้งขึ้นจากโต๊ะแบบนุ่ม ๆ แล้วลอยขึ้นลงเบา ๆ ให้สะดุดตา */
+@keyframes bubble-in {
+  0% { opacity: 0; transform: translateY(10px) scale(0.6); }
+  60% { opacity: 1; transform: translateY(-2px) scale(1.04); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes bubble-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -4px; }
+}
+.animate-bubble {
+  transform-origin: bottom center;
+  animation:
+    bubble-in 420ms var(--ease-soft) both,
+    bubble-float 2.6s ease-in-out 420ms infinite;
+}

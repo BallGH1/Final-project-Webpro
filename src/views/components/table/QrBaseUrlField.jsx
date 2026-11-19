@@ -3,7 +3,7 @@ import { CircleAlert, Link2, Wifi } from 'lucide-react'
 /** ช่องตั้ง URL หลักที่ใส่ใน QR (เริ่มจาก IP ของเครื่อง แก้เองได้ เช่น URL ของ tunnel) */
 export default function QrBaseUrlField({ baseUrl, onChange, addresses, valid }) {
   return (
-    <section className="card border border-base-300 bg-base-100">
+    <section className="card bg-base-100">
       <div className="card-body gap-3 p-4 sm:p-5">
         <fieldset className="fieldset p-0">
           <label htmlFor="qr-base-url" className="fieldset-legend pt-0">

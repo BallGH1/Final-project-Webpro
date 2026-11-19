@@ -96,8 +96,14 @@ export default function OrderStatusPage() {
         />
       ) : (
         <div className="grid items-start gap-4 md:grid-cols-2">
-          {orders.map((order) => (
-            <OrderCard key={order.id} order={order} showProgress />
+          {orders.map((order, index) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              showProgress
+              className="animate-fade-up"
+              style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
+            />
           ))}
         </div>
       )}

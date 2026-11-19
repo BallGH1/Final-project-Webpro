@@ -22,3 +22,6 @@ export function isActiveSession(status) {
 export function canOrder(status) {
   return status === SESSION_STATUS.OPEN
 }
+
+// เหตุผลที่ลูกค้าเรียกพนักงาน (แสดงเป็นกล่องคำพูดบนผังร้านของพนักงาน)
+export const CALL_REASONS = ['เรียกพนักงาน', 'ขอน้ำซุปเพิ่ม', 'ขอช้อน/ตะเกียบ', 'ขอน้ำแข็ง', 'ขอเปลี่ยนหม้อ']

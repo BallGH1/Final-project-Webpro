@@ -1,6 +1,7 @@
 // Controller: สถานะโต๊ะทั้งร้าน (หน้าพนักงาน) — ดึงใหม่ทุก POLL_INTERVAL จึงเห็นโต๊ะที่ขอเช็กบิลทันที
 import { useCallback, useEffect, useState } from 'react'
 import { getTables, openTable as openTableApi } from '../models/tableModel'
+import { acknowledgeCall as acknowledgeCallApi } from '../models/sessionModel'
 import { POLL_INTERVAL } from '../models/orderModel'
 
 export function useTables() {
@@ -40,5 +41,13 @@ export function useTables() {
     return session
   }
 
-  return { tables, loading, error, refresh, openTable }
+  /** รับทราบการเรียกพนักงานของโต๊ะ (กล่องคำพูดบนผังหายไป) */
+  async function acknowledgeCall(tableId) {
+    const table = tables.find((t) => t.id === tableId)
+    if (!table?.session) return
+    const session = await acknowledgeCallApi(table.session.id)
+    setTables((list) => list.map((t) => (t.id === tableId ? { ...t, session } : t)))
+  }
+
+  return { tables, loading, error, refresh, openTable, acknowledgeCall }
 }

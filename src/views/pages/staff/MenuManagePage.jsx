@@ -64,7 +64,12 @@ export default function MenuManagePage() {
 
   const rowActions = (item) => (
     <div className="flex justify-end gap-1">
-      <button type="button" className="btn btn-ghost btn-sm btn-square max-sm:size-11" onClick={() => setEditing(item)} aria-label={`แก้ไข ${item.name}`}>
+      <button
+        type="button"
+        className="btn btn-ghost btn-sm btn-square max-sm:size-11"
+        onClick={() => setEditing(item)}
+        aria-label={`แก้ไข ${item.name}`}
+      >
         <Pencil size={16} aria-hidden="true" />
       </button>
       <button
@@ -117,7 +122,13 @@ export default function MenuManagePage() {
                   <tr key={item.id}>
                     <td>
                       <span className="flex items-center gap-3 font-medium">
-                        <FoodImage name={item.name} emoji={item.image} categoryId={item.categoryId} iconSize={18} className="size-10 rounded-lg" />
+                        <FoodImage
+                          name={item.name}
+                          emoji={item.image}
+                          categoryId={item.categoryId}
+                          iconSize={18}
+                          className="size-10 rounded-lg"
+                        />
                         {item.name}
                       </span>
                     </td>
@@ -137,7 +148,13 @@ export default function MenuManagePage() {
           <ul className="space-y-2 md:hidden">
             {filtered.map((item) => (
               <li key={item.id} className="flex items-center gap-3 rounded-box border border-base-300 bg-base-100 p-3">
-                <FoodImage name={item.name} emoji={item.image} categoryId={item.categoryId} iconSize={20} className="size-12 rounded-xl" />
+                <FoodImage
+                  name={item.name}
+                  emoji={item.image}
+                  categoryId={item.categoryId}
+                  iconSize={20}
+                  className="size-12 rounded-xl"
+                />
                 <div className="min-w-0 flex-1 space-y-1">
                   <p className="truncate font-medium">{item.name}</p>
                   <p className="text-xs text-base-content/60">
@@ -154,26 +171,35 @@ export default function MenuManagePage() {
 
       {/* Modal เพิ่ม/แก้ไขเมนู (modal ของ DaisyUI แบบ Lab 11 ผ่าน component Modal กลาง) */}
       {editing && (
-        <Modal onClose={() => setEditing(null)} locked={saving} labelledBy="menu-modal-title" boxClassName="max-h-[90vh] max-w-2xl">
-          <button
-            type="button"
-            className="btn btn-ghost btn-circle absolute top-3 right-3 max-sm:size-11"
-            onClick={() => setEditing(null)}
-            aria-label="ปิด"
-          >
-            <X size={18} aria-hidden="true" />
-          </button>
-          <h2 id="menu-modal-title" className="mb-2 text-xl font-semibold">
-            {editing === 'new' ? 'เพิ่มเมนูใหม่' : `แก้ไข: ${editing.name}`}
-          </h2>
-          <MenuForm
-            key={editing === 'new' ? 'new' : editing.id}
-            categories={categories}
-            initialValue={editing === 'new' ? null : editing}
-            saving={saving}
-            onSubmit={handleSubmit}
-            onCancel={() => setEditing(null)}
-          />
+        <Modal
+          onClose={() => setEditing(null)}
+          locked={saving}
+          labelledBy="menu-modal-title"
+          boxClassName="max-h-[90vh] max-w-2xl"
+        >
+          {(close) => (
+            <>
+              <button
+                type="button"
+                className="btn btn-ghost btn-circle absolute top-3 right-3 max-sm:size-11"
+                onClick={close}
+                aria-label="ปิด"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+              <h2 id="menu-modal-title" className="mb-2 text-xl font-semibold">
+                {editing === 'new' ? 'เพิ่มเมนูใหม่' : `แก้ไข: ${editing.name}`}
+              </h2>
+              <MenuForm
+                key={editing === 'new' ? 'new' : editing.id}
+                categories={categories}
+                initialValue={editing === 'new' ? null : editing}
+                saving={saving}
+                onSubmit={handleSubmit}
+                onCancel={close}
+              />
+            </>
+          )}
         </Modal>
       )}
 

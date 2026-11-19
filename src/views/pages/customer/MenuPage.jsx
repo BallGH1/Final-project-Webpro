@@ -10,6 +10,9 @@ import CategoryTabs from '../../components/menu/CategoryTabs'
 import MenuCard from '../../components/menu/MenuCard'
 import { EmptyState, ErrorState, LoadingState } from '../../components/common/StateMessages'
 
+const TOAST_MS = 2000
+const TOAST_EXIT_MS = 220
+
 export default function MenuPage() {
   const { menu, categories, loading, error, reload } = useMenu()
   const { query, setQuery, categoryId, setCategoryId, filtered } = useMenuFilter(menu)
@@ -19,11 +22,17 @@ export default function MenuPage() {
   // toast แจ้งว่าเพิ่มลงตะกร้าแล้ว (หายเองหลัง 2 วินาที)
   const [toast, setToast] = useState(null)
 
+  // แสดง 2 วินาที: ช่วงท้ายใส่ leaving ให้ลอยขึ้นจางหาย (animation toast-out ใน index.css) แล้วค่อยเอาออก
+  const toastAt = toast?.at // เริ่มนับเวลาใหม่ทุกครั้งที่กดเพิ่มเมนู
   useEffect(() => {
-    if (!toast) return
-    const timer = setTimeout(() => setToast(null), 2000)
-    return () => clearTimeout(timer)
-  }, [toast])
+    if (!toastAt) return
+    const leave = setTimeout(() => setToast((t) => t && { ...t, leaving: true }), TOAST_MS - TOAST_EXIT_MS)
+    const remove = setTimeout(() => setToast(null), TOAST_MS)
+    return () => {
+      clearTimeout(leave)
+      clearTimeout(remove)
+    }
+  }, [toastAt])
 
   const qtyInCart = (menuId) => items.find((line) => line.menuId === menuId)?.qty ?? 0
 
@@ -62,7 +71,7 @@ export default function MenuPage() {
 
       {toast && (
         <div className="toast toast-center z-30 mb-20 sm:mb-2" role="status">
-          <div key={toast.at} className="alert alert-success py-2.5 shadow-lg">
+          <div key={toast.at} className={`alert alert-success py-2.5 shadow-lg ${toast.leaving ? 'toast-leaving' : ''}`}>
             <CircleCheck size={18} aria-hidden="true" />
             <span>เพิ่ม {toast.name} แล้ว</span>
             <Link to={`${basePath}/cart`} className="btn btn-sm btn-ghost underline max-sm:min-h-11">

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Armchair, Ban, ChevronDown, ChevronUp, Clock, StickyNote } from 'lucide-react'
+import { Armchair, Ban, ChevronDown, Clock, StickyNote } from 'lucide-react'
 import StatusBadge from './StatusBadge'
 import FoodImage from '../common/FoodImage'
 import { formatMoney, formatTime } from '../../../models/formatters'
@@ -28,22 +28,35 @@ const STEPS = [
  * การ์ดออร์เดอร์ — ใช้ทั้งหน้าลูกค้าและหน้าพนักงาน
  * `actions` คือปุ่มเปลี่ยนสถานะของพนักงาน, `showProgress` แสดงขั้นตอนให้ลูกค้า
  */
-export default function OrderCard({ order, showTable = false, showProgress = false, actions }) {
+export default function OrderCard({ order, showTable = false, showProgress = false, actions, className = '', style }) {
   const stepIndex = STEPS.findIndex((step) => step.status === order.status)
 
   // ออร์เดอร์ใหญ่: แสดงแค่บางรายการก่อน การ์ดจะได้ไม่ยาวจนปุ่มหลุดจอ
   const [expanded, setExpanded] = useState(false)
   const collapsible = order.items.length > COLLAPSE_AFTER
-  const visibleItems = collapsible && !expanded ? order.items.slice(0, PREVIEW_COUNT) : order.items
+  const firstItems = collapsible ? order.items.slice(0, PREVIEW_COUNT) : order.items
+  const restItems = collapsible ? order.items.slice(PREVIEW_COUNT) : []
   const hiddenCount = order.items.length - PREVIEW_COUNT
   const totalQty = order.items.reduce((sum, line) => sum + line.qty, 0)
   const listId = `order-items-${order.id}`
 
+  const renderLine = (line, index) => (
+    <li key={`${line.menuId}-${index}`} className="flex items-center justify-between gap-2 py-1.5">
+      <span className="flex min-w-0 items-center gap-2">
+        <FoodImage name={line.name} emoji={line.image} iconSize={15} className="size-8 rounded-lg" />
+        <span className="truncate">{line.name}</span>
+        <span className="shrink-0 text-base-content/60">× {line.qty}</span>
+      </span>
+      <span className="shrink-0 text-base-content/70">{formatMoney(line.price * line.qty)}</span>
+    </li>
+  )
+
   return (
     <article
-      className={`card border border-l-4 border-base-300 bg-base-100 shadow-sm ${STRIPES[order.status] ?? ''} ${
-        order.status === 'cancelled' ? 'opacity-70' : ''
-      }`}
+      style={style}
+      className={`card border border-l-4 border-base-300 bg-base-100 shadow-sm transition-[opacity,border-color] duration-500 ${
+        STRIPES[order.status] ?? ''
+      } ${order.status === 'cancelled' ? 'opacity-70' : ''} ${className}`}
     >
       <div className="card-body gap-3 p-4">
         <header className="flex flex-wrap items-start justify-between gap-2">
@@ -76,18 +89,20 @@ export default function OrderCard({ order, showTable = false, showProgress = fal
           </ul>
         )}
 
-        <ul id={listId} className="divide-y divide-base-300 text-sm">
-          {visibleItems.map((line, index) => (
-            <li key={`${line.menuId}-${index}`} className="flex items-center justify-between gap-2 py-1.5">
-              <span className="flex min-w-0 items-center gap-2">
-                <FoodImage name={line.name} emoji={line.image} iconSize={15} className="size-8 rounded-lg" />
-                <span className="truncate">{line.name}</span>
-                <span className="shrink-0 text-base-content/60">× {line.qty}</span>
-              </span>
-              <span className="shrink-0 text-base-content/70">{formatMoney(line.price * line.qty)}</span>
-            </li>
-          ))}
-        </ul>
+        <div id={listId} className="text-sm">
+          <ul className="divide-y divide-base-300">{firstItems.map(renderLine)}</ul>
+          {collapsible && (
+            // กาง/หุบแบบนุ่ม: เปลี่ยนความสูงแถว grid จาก 0fr → 1fr (ไม่ต้องรู้ความสูงจริงล่วงหน้า)
+            <div
+              className="grid transition-[grid-template-rows] duration-[400ms] ease-[var(--ease-soft)]"
+              style={{ gridTemplateRows: expanded ? '1fr' : '0fr' }}
+            >
+              <ul inert={!expanded} className="min-h-0 divide-y divide-base-300 overflow-hidden border-t border-base-300">
+                {restItems.map((line, index) => renderLine(line, index + PREVIEW_COUNT))}
+              </ul>
+            </div>
+          )}
+        </div>
 
         {collapsible && (
           <button
@@ -97,7 +112,11 @@ export default function OrderCard({ order, showTable = false, showProgress = fal
             onClick={() => setExpanded((open) => !open)}
             className="btn btn-ghost btn-sm -mt-2 w-full text-base-content/70 max-sm:min-h-11"
           >
-            {expanded ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}
+            <ChevronDown
+              size={16}
+              aria-hidden="true"
+              className={`transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}
+            />
             {expanded ? 'ย่อรายการ' : `ดูอีก ${hiddenCount} รายการ`}
           </button>
         )}

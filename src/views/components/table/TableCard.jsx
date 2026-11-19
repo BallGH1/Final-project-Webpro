@@ -1,4 +1,4 @@
-import { Clock, DoorOpen, QrCode, ReceiptText, Users } from 'lucide-react'
+import { BellRing, Check, Clock, DoorOpen, QrCode, ReceiptText, Users } from 'lucide-react'
 import { SESSION_STATUS } from '../../../models/sessionModel'
 import { formatMoney, formatTime } from '../../../models/formatters'
 import Button from '../common/Button'
@@ -7,7 +7,7 @@ import SessionBadge from './SessionBadge'
 // กรอบการ์ดตามสถานะ — โต๊ะที่ขอเช็กบิลเด่นที่สุด
 const BORDERS = {
   open: 'border-warning/60',
-  billing: 'border-error ring-2 ring-error/30',
+  billing: 'border-error ring-2 ring-error/30 animate-soft-pulse', // กรอบแดงเต้นช้า ๆ ให้สะดุดตา
 }
 
 /**
@@ -15,11 +15,11 @@ const BORDERS = {
  * - โต๊ะว่าง: ปุ่ม "เปิดโต๊ะ"
  * - มีลูกค้า/ขอเช็กบิล: แสดงยอดปัจจุบัน + ปุ่ม QR และ ดูบิล
  */
-export default function TableCard({ table, busy, onOpen, onShowQr }) {
+export default function TableCard({ table, busy, onOpen, onShowQr, onAcknowledge }) {
   const { session } = table
 
   return (
-    <article className={`card border bg-base-100 shadow-sm ${session ? BORDERS[session.status] : 'border-base-300'}`}>
+    <article className={`card border bg-base-100 shadow-sm transition-[border-color,box-shadow] duration-500 ${session ? BORDERS[session.status] : 'border-base-300'}`}>
       <div className="card-body gap-3 p-4">
         <header className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1">
           <div>
@@ -31,6 +31,22 @@ export default function TableCard({ table, busy, onOpen, onShowQr }) {
           </div>
           <SessionBadge status={session?.status} />
         </header>
+
+        {session?.staffCall && (
+          // ลูกค้าเรียกพนักงาน: แสดงเรื่องที่ขอ + ปุ่มรับทราบ (กล่องคำพูดบนผังจะหายไป)
+          <div role="status" className="flex items-center justify-between gap-2 rounded-field bg-info/10 px-3 py-2 text-sm">
+            <span className="flex items-center gap-1.5 font-medium text-info-strong">
+              <BellRing size={15} aria-hidden="true" className="motion-safe:animate-pulse" />
+              {session.staffCall.reason} · {formatTime(session.staffCall.at)} น.
+            </span>
+            {onAcknowledge && (
+              <Button size="sm" variant="secondary" onClick={() => onAcknowledge(table.id)}>
+                <Check size={14} aria-hidden="true" />
+                รับทราบ
+              </Button>
+            )}
+          </div>
+        )}
 
         {session ? (
           <>
