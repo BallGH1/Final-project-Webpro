@@ -1,10 +1,11 @@
-// ข้อความสถานะที่ใช้ซ้ำทุกหน้า: กำลังโหลด / เกิดข้อผิดพลาด / ไม่มีข้อมูล
+// ข้อความสถานะที่ใช้ซ้ำทุกหน้า: กำลังโหลด / เกิดข้อผิดพลาด / ไม่มีข้อมูล (ใช้ loading, alert ของ DaisyUI)
+import { CircleAlert, Inbox, RefreshCw } from 'lucide-react'
 import Button from './Button'
 
 export function LoadingState({ text = 'กำลังโหลด...' }) {
   return (
-    <div role="status" className="flex items-center justify-center gap-3 py-16 text-stone-500">
-      <span className="size-5 animate-spin rounded-full border-2 border-stone-300 border-t-brand" />
+    <div role="status" className="flex items-center justify-center gap-3 py-16 text-base-content/60">
+      <span className="loading loading-spinner text-primary" />
       {text}
     </div>
   )
@@ -12,13 +13,14 @@ export function LoadingState({ text = 'กำลังโหลด...' }) {
 
 export function ErrorState({ message, onRetry }) {
   return (
-    <div
-      role="alert"
-      className="flex flex-col items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between"
-    >
-      <span>⚠️ {message}</span>
+    <div role="alert" className="alert alert-error alert-soft flex flex-wrap items-center justify-between gap-3">
+      <span className="flex items-center gap-2">
+        <CircleAlert size={18} aria-hidden="true" />
+        {message}
+      </span>
       {onRetry && (
         <Button variant="secondary" size="sm" onClick={onRetry}>
+          <RefreshCw size={14} aria-hidden="true" />
           ลองใหม่
         </Button>
       )}
@@ -26,12 +28,15 @@ export function ErrorState({ message, onRetry }) {
   )
 }
 
-export function EmptyState({ icon = '🍽️', title, text, action }) {
+/** `icon` คือไอคอนจาก lucide-react เช่น icon={ShoppingBasket} */
+export function EmptyState({ icon: Icon = Inbox, title, text, action }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-stone-300 bg-white px-6 py-12 text-center">
-      <span className="text-4xl">{icon}</span>
+    <div className="flex flex-col items-center gap-2 rounded-box border border-dashed border-base-300 bg-base-100 px-6 py-12 text-center">
+      <span className="mb-1 flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <Icon size={26} strokeWidth={1.75} aria-hidden="true" />
+      </span>
       <h2 className="text-lg font-semibold">{title}</h2>
-      {text && <p className="text-sm text-stone-500">{text}</p>}
+      {text && <p className="text-sm text-base-content/60">{text}</p>}
       {action && <div className="mt-2">{action}</div>}
     </div>
   )

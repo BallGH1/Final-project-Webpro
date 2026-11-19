@@ -1,39 +1,51 @@
 import { NavLink } from 'react-router-dom'
+import { ReceiptText, ShoppingBasket, UtensilsCrossed } from 'lucide-react'
 import { useCart } from '../../../controllers/cart/useCart'
 
-/** แถบเมนูฝั่งลูกค้า: มือถืออยู่ด้านล่างจอ, จอใหญ่อยู่บน header */
-export default function CustomerNav() {
+/**
+ * แถบเมนูฝั่งลูกค้า
+ * - variant="dock": มือถือ ติดอยู่ด้านล่างจอ (dock ของ DaisyUI)
+ * - variant="bar": จอใหญ่ อยู่บน header
+ */
+export default function CustomerNav({ variant = 'bar' }) {
   const { tableId, count } = useCart()
   const base = `/table/${tableId}`
   const links = [
-    { to: base, label: 'เมนู', icon: '🍲', end: true },
-    { to: `${base}/cart`, label: 'ตะกร้า', icon: '🛒', badge: count },
-    { to: `${base}/orders`, label: 'ออร์เดอร์ของฉัน', icon: '🧾' },
+    { to: base, label: 'เมนู', Icon: UtensilsCrossed, end: true },
+    { to: `${base}/cart`, label: 'ตะกร้า', Icon: ShoppingBasket, badge: count },
+    { to: `${base}/orders`, label: 'ออร์เดอร์ของฉัน', Icon: ReceiptText },
   ]
 
-  return (
-    <nav
-      aria-label="เมนูลูกค้า"
-      className="fixed inset-x-0 bottom-0 z-20 flex border-t border-stone-200 bg-white sm:static sm:gap-1 sm:border-0 sm:bg-transparent"
-    >
-      {links.map((link) => (
-        <NavLink
-          key={link.to}
-          to={link.to}
-          end={link.end}
-          className={({ isActive }) =>
-            `relative flex flex-1 flex-col items-center gap-0.5 py-2 text-xs font-medium whitespace-nowrap sm:flex-row sm:gap-2 sm:rounded-lg sm:px-3 sm:text-sm ${
-              isActive ? 'text-brand sm:bg-brand-soft' : 'text-stone-500 hover:text-stone-800'
-            }`
-          }
-        >
-          <span className="text-lg sm:text-base">{link.icon}</span>
-          {link.label}
-          {link.badge > 0 && (
-            <span className="absolute top-1 right-[calc(50%-1.75rem)] rounded-full bg-brand px-1.5 text-[10px] text-white sm:static">
-              {link.badge}
+  if (variant === 'dock') {
+    return (
+      <nav aria-label="เมนูลูกค้า" className="dock dock-md z-20 border-t border-base-300 bg-base-100">
+        {links.map(({ to, label, Icon, end, badge }) => (
+          <NavLink key={to} to={to} end={end} className={({ isActive }) => (isActive ? 'dock-active text-primary' : '')}>
+            <span className="relative">
+              <Icon size={22} aria-hidden="true" />
+              {badge > 0 && (
+                <span className="badge badge-primary badge-xs absolute -top-2 -right-3 min-w-5 font-semibold">{badge}</span>
+              )}
             </span>
-          )}
+            <span className="dock-label">{label}</span>
+          </NavLink>
+        ))}
+      </nav>
+    )
+  }
+
+  return (
+    <nav aria-label="เมนูลูกค้า" className="flex gap-1">
+      {links.map(({ to, label, Icon, end, badge }) => (
+        <NavLink
+          key={to}
+          to={to}
+          end={end}
+          className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary btn-soft' : 'btn-ghost'}`}
+        >
+          <Icon size={16} aria-hidden="true" />
+          {label}
+          {badge > 0 && <span className="badge badge-primary badge-sm">{badge}</span>}
         </NavLink>
       ))}
     </nav>

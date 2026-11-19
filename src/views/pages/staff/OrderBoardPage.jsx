@@ -1,5 +1,6 @@
 // หน้า Dashboard ออร์เดอร์ (พนักงาน): ออร์เดอร์ใหม่เข้ามาเองทุกไม่กี่วินาที + เปลี่ยนสถานะ
 import { useState } from 'react'
+import { Ban, CircleCheck, Flame, Sparkles } from 'lucide-react'
 import { useOrders } from '../../../controllers/useOrders'
 import OrderCard from '../../components/order/OrderCard'
 import Button from '../../components/common/Button'
@@ -8,6 +9,8 @@ import { NEXT_STATUS, STATUS_ACTION_LABEL, STATUS_LABEL } from '../../../models/
 import { formatTime } from '../../../models/formatters'
 
 const FILTERS = ['all', 'pending', 'preparing', 'served', 'cancelled']
+
+const ACTION_ICONS = { preparing: Flame, served: CircleCheck, cancelled: Ban }
 
 export default function OrderBoardPage() {
   const { orders, loading, error, lastUpdated, refresh, changeStatus } = useOrders()
@@ -34,27 +37,36 @@ export default function OrderBoardPage() {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-2">
-        <h1 className="text-2xl font-bold">ออร์เดอร์</h1>
+        <div>
+          <h1 className="text-2xl font-semibold sm:text-3xl">ออร์เดอร์</h1>
+          <p className="text-sm text-base-content/60">ออร์เดอร์ใหม่จะขึ้นเองโดยไม่ต้องรีเฟรช</p>
+        </div>
         {lastUpdated && (
-          <p className="text-xs text-stone-500">อัปเดตอัตโนมัติ · ล่าสุด {formatTime(lastUpdated)} น.</p>
+          <p className="flex items-center gap-1.5 text-xs text-base-content/60">
+            <span className="status status-success animate-pulse" aria-hidden="true" />
+            ล่าสุด {formatTime(lastUpdated)} น.
+          </p>
         )}
       </div>
 
-      <div role="tablist" aria-label="กรองตามสถานะ" className="flex gap-2 overflow-x-auto pb-1">
-        {FILTERS.map((status) => (
-          <button
-            key={status}
-            type="button"
-            role="tab"
-            aria-selected={filter === status}
-            onClick={() => setFilter(status)}
-            className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium ${
-              filter === status ? 'bg-stone-900 text-white' : 'bg-white ring-1 ring-stone-200 hover:bg-stone-100'
-            }`}
-          >
-            {status === 'all' ? 'ทั้งหมด' : STATUS_LABEL[status]} ({countOf(status)})
-          </button>
-        ))}
+      <div className="-mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
+        <div role="tablist" aria-label="กรองตามสถานะ" className="tabs tabs-box w-max flex-nowrap bg-base-100">
+          {FILTERS.map((status) => (
+            <button
+              key={status}
+              type="button"
+              role="tab"
+              aria-selected={filter === status}
+              onClick={() => setFilter(status)}
+              className={`tab gap-2 whitespace-nowrap ${filter === status ? 'tab-active' : ''}`}
+            >
+              {status === 'all' ? 'ทั้งหมด' : STATUS_LABEL[status]}
+              <span className={`badge badge-sm ${status === 'pending' && countOf(status) > 0 ? 'badge-warning' : 'badge-ghost'}`}>
+                {countOf(status)}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {error && <ErrorState message={error} onRetry={refresh} />}
@@ -63,7 +75,7 @@ export default function OrderBoardPage() {
       {loading ? (
         <LoadingState text="กำลังโหลดออร์เดอร์..." />
       ) : visible.length === 0 ? (
-        <EmptyState icon="✨" title="ไม่มีออร์เดอร์ในสถานะนี้" />
+        <EmptyState icon={Sparkles} title="ไม่มีออร์เดอร์ในสถานะนี้" />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {visible.map((order) => (
@@ -71,17 +83,21 @@ export default function OrderBoardPage() {
               key={order.id}
               order={order}
               showTable
-              actions={NEXT_STATUS[order.status].map((next) => (
-                <Button
-                  key={next}
-                  size="sm"
-                  variant={next === 'cancelled' ? 'secondary' : 'primary'}
-                  disabled={busyId === order.id}
-                  onClick={() => handleChange(order.id, next)}
-                >
-                  {STATUS_ACTION_LABEL[next]}
-                </Button>
-              ))}
+              actions={NEXT_STATUS[order.status].map((next) => {
+                const Icon = ACTION_ICONS[next]
+                return (
+                  <Button
+                    key={next}
+                    size="sm"
+                    variant={next === 'cancelled' ? 'ghost' : 'primary'}
+                    disabled={busyId === order.id}
+                    onClick={() => handleChange(order.id, next)}
+                  >
+                    {Icon && <Icon size={14} aria-hidden="true" />}
+                    {STATUS_ACTION_LABEL[next]}
+                  </Button>
+                )
+              })}
             />
           ))}
         </div>
