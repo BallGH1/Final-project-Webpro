@@ -10,6 +10,7 @@ import OrderCard from '../../components/order/OrderCard'
 import RequestBillModal from '../../components/order/RequestBillModal'
 import Button from '../../components/common/Button'
 import { EmptyState, ErrorState, LoadingState } from '../../components/common/StateMessages'
+import MasonryGrid from '../../components/common/MasonryGrid'
 
 export default function OrderStatusPage() {
   const { basePath } = useCart()
@@ -95,7 +96,7 @@ export default function OrderStatusPage() {
           }
         />
       ) : (
-        <div className="grid items-start gap-4 md:grid-cols-2">
+        <MasonryGrid breakpoints={{ 0: 1, 768: 2 }}>
           {orders.map((order, index) => (
             <OrderCard
               key={order.id}
@@ -105,7 +106,7 @@ export default function OrderStatusPage() {
               style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
             />
           ))}
-        </div>
+        </MasonryGrid>
       )}
     </div>
   )

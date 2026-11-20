@@ -320,3 +320,15 @@
     bubble-in 420ms var(--ease-soft) both,
     bubble-float 2.6s ease-in-out 420ms infinite;
 }
+
+/* กราฟหน้าสถิติ: แท่งค่อย ๆ งอกจากฐาน (ใส่ animation-delay ให้ขึ้นทีละแท่ง) */
+@keyframes grow-y {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.animate-grow-y { transform-origin: bottom; animation: grow-y 700ms var(--ease-soft) both; }
+.animate-grow-x { transform-origin: left; animation: grow-x 700ms var(--ease-soft) both; }

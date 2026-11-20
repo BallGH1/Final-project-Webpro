@@ -27,6 +27,8 @@ npm run dev        # รัน API (port 3001) + หน้าเว็บ (port 
 | `/staff` | Dashboard ออร์เดอร์ + เปลี่ยนสถานะ + แจ้งเตือนโต๊ะขอเช็กบิล | พนักงาน |
 | `/staff/menu` | จัดการเมนู (เพิ่ม/แก้ไข/ลบ/เปิด-ปิดขาย) | พนักงาน |
 | `/staff/tables` | ผังร้าน (ลาก/ซูมได้) หรือรายการโต๊ะ + เปิดโต๊ะ + กล่องคำพูดเมื่อขอเช็กบิล/เรียกพนักงาน | พนักงาน |
+| `/staff/history` | ประวัติบิลที่ชำระแล้ว กรองตามช่วงเวลา/โต๊ะ | พนักงาน |
+| `/staff/dashboard` | สถิติ: ยอดขาย บิล ออร์เดอร์ เวลาเสิร์ฟ กราฟรายชั่วโมง/รายวัน เมนูขายดี ยอดตามหมวด | พนักงาน |
 | `/staff/tables/bill/:sessionId` | บิลรวมของโต๊ะ + ชำระแล้ว / ปิดโต๊ะ | พนักงาน |
 
 ## บิลและ QR Code (เปิดโต๊ะ 1 ครั้ง = บิล 1 ใบ = QR 1 ชุด)
@@ -95,6 +97,8 @@ src/                        ← หน้าเว็บ (React + Vite + Tailwin
 | POST | `/api/s/:token/request-bill` | ลูกค้า: ขอเช็กบิล |
 | POST | `/api/s/:token/call-staff` | ลูกค้า: เรียกพนักงาน `{ reason }` |
 | POST | `/api/sessions/:id/ack-call` | พนักงาน: รับทราบการเรียก |
+| GET | `/api/stats?range=today\|7d\|30d` | สถิติร้าน (คิดตามเวลาไทย) |
+| GET | `/api/bills?range=&tableId=` | ประวัติบิลที่ชำระแล้ว |
 | GET | `/api/server-info` | IP ของเครื่อง server (ใช้สร้าง URL ใน QR) |
 | GET | `/api/orders?tableId=&status=` | รายการออร์เดอร์ (พนักงาน) |
 | PATCH | `/api/orders/:id/status` | เปลี่ยนสถานะ `{ status, reason }` (`reason` จำเป็นเมื่อยกเลิก) |

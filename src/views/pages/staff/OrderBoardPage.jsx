@@ -13,6 +13,7 @@ import Button from '../../components/common/Button'
 import { EmptyState, ErrorState, LoadingState } from '../../components/common/StateMessages'
 import { NEXT_STATUS, STATUS_ACTION_LABEL, STATUS_LABEL } from '../../../models/orderModel'
 import { formatTime } from '../../../models/formatters'
+import MasonryGrid from '../../components/common/MasonryGrid'
 
 const FILTERS = ['all', 'pending', 'preparing', 'served', 'cancelled']
 
@@ -131,7 +132,7 @@ export default function OrderBoardPage() {
       ) : visible.length === 0 ? (
         <EmptyState icon={Sparkles} title="ไม่มีออร์เดอร์ในสถานะนี้" />
       ) : (
-        <div className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 min-[1800px]:grid-cols-5">
+        <MasonryGrid breakpoints={{ 0: 1, 640: 2, 1280: 3, 1536: 4, 1800: 5 }}>
           {visible.map((order, index) => (
             <OrderCard
               key={order.id}
@@ -157,7 +158,7 @@ export default function OrderBoardPage() {
               })}
             />
           ))}
-        </div>
+        </MasonryGrid>
       )}
 
       {cancelTarget && (

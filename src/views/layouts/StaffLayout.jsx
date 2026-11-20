@@ -1,7 +1,7 @@
 // Layout หลังร้าน: Navbar + Sidebar + <Outlet /> (แบบ AdminLayout ใน Lab 11)
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
-import { ClipboardList, LayoutGrid, Store, UtensilsCrossed } from 'lucide-react'
+import { ChartColumn, ClipboardList, History, LayoutGrid, Store, UtensilsCrossed } from 'lucide-react'
 import Logo from '../components/common/Logo'
 import ThemeToggle from '../components/layout/ThemeToggle'
 import { readStorage, writeStorage } from '../../models/storage'
@@ -12,6 +12,8 @@ const LINKS = [
   { to: '/staff', label: 'ออร์เดอร์', Icon: ClipboardList, end: true },
   { to: '/staff/menu', label: 'จัดการเมนู', Icon: UtensilsCrossed },
   { to: '/staff/tables', label: 'โต๊ะ & บิล', Icon: LayoutGrid },
+  { to: '/staff/history', label: 'ประวัติบิล', Icon: History },
+  { to: '/staff/dashboard', label: 'สถิติ', Icon: ChartColumn },
 ]
 
 const THEME_KEY = 'suki-staff-theme'

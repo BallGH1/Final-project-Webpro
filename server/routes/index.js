@@ -4,6 +4,7 @@ import * as menu from '../controllers/menuController.js'
 import * as table from '../controllers/tableController.js'
 import * as order from '../controllers/orderController.js'
 import * as session from '../controllers/sessionController.js'
+import * as stats from '../controllers/statsController.js'
 import { getServerInfo } from '../controllers/serverController.js'
 
 const router = Router()
@@ -34,6 +35,10 @@ router.get('/s/:token/orders', session.listOrdersByToken)
 router.post('/s/:token/orders', session.createOrderByToken)
 router.post('/s/:token/request-bill', session.requestBill)
 router.post('/s/:token/call-staff', session.callStaff)
+
+// สถิติ + ประวัติบิล (พนักงาน)
+router.get('/stats', stats.getStats)
+router.get('/bills', stats.listBills)
 
 // ออร์เดอร์ (พนักงาน)
 router.get('/orders', order.listOrders)

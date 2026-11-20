@@ -10,6 +10,8 @@ import OrderBoardPage from './views/pages/staff/OrderBoardPage'
 import MenuManagePage from './views/pages/staff/MenuManagePage'
 import TablesPage from './views/pages/staff/TablesPage'
 import BillPage from './views/pages/staff/BillPage'
+import DashboardPage from './views/pages/staff/DashboardPage'
+import BillHistoryPage from './views/pages/staff/BillHistoryPage'
 
 export default function App() {
   return (
@@ -29,6 +31,8 @@ export default function App() {
         <Route path="menu" element={<MenuManagePage />} />
         <Route path="tables" element={<TablesPage />} />
         <Route path="tables/bill/:sessionId" element={<BillPage />} />
+        <Route path="history" element={<BillHistoryPage />} />
+        <Route path="dashboard" element={<DashboardPage />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />
